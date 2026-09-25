@@ -1,0 +1,746 @@
+@import "tailwindcss";
+@import "./max-theme.css";
+
+/* =========================================================
+   MAX ERP — PREMIUM GLOBAL THEME SYSTEM
+   ========================================================= */
+
+:root {
+  --background: #f4f7fb;
+  --foreground: #172033;
+
+  --surface: #ffffff;
+  --surface-soft: #f8fafc;
+  --surface-muted: #eef3f8;
+
+  --border: #e2e8f0;
+  --border-strong: #cbd5e1;
+
+  --text-primary: #172033;
+  --text-secondary: #475569;
+  --text-muted: #64748b;
+  --text-faint: #94a3b8;
+
+  --primary: #2563eb;
+  --primary-hover: #1d4ed8;
+  --primary-soft: #eff6ff;
+
+  --header: #ffffff;
+  --card: #ffffff;
+
+  --glow: rgba(37, 99, 235, 0.12);
+}
+
+/* =========================================================
+   TAILWIND TOKENS
+   ========================================================= */
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+/* =========================================================
+   LIGHT THEME
+   ========================================================= */
+
+html[data-max-theme="light"] {
+  --background: #f4f7fb;
+  --foreground: #172033;
+
+  --surface: #ffffff;
+  --surface-soft: #f8fafc;
+  --surface-muted: #eef3f8;
+
+  --border: #e2e8f0;
+  --border-strong: #cbd5e1;
+
+  --text-primary: #172033;
+  --text-secondary: #475569;
+  --text-muted: #64748b;
+  --text-faint: #94a3b8;
+
+  --primary: #2563eb;
+  --primary-hover: #1d4ed8;
+  --primary-soft: #eff6ff;
+
+  --header: rgba(255, 255, 255, 0.96);
+  --card: #ffffff;
+
+  --glow: rgba(37, 99, 235, 0.10);
+}
+
+/* =========================================================
+   DARK THEME
+   ========================================================= */
+
+html[data-max-theme="dark"] {
+  --background: #0a0f18;
+  --foreground: #e8eef7;
+
+  --surface: #111925;
+  --surface-soft: #151f2d;
+  --surface-muted: #1b2736;
+
+  --border: #263548;
+  --border-strong: #3a4c61;
+
+  --text-primary: #f8fafc;
+  --text-secondary: #c5d0dd;
+  --text-muted: #91a0b1;
+  --text-faint: #607184;
+
+  --primary: #5b9cff;
+  --primary-hover: #7eb1ff;
+  --primary-soft: #172d50;
+
+  --header: rgba(13, 19, 29, 0.96);
+  --card: #111925;
+
+  --glow: rgba(59, 130, 246, 0.16);
+}
+
+/* =========================================================
+   SKY THEME
+   ========================================================= */
+
+html[data-max-theme="sky"] {
+  --background: #eaf7ff;
+  --foreground: #14324a;
+
+  --surface: rgba(255, 255, 255, 0.94);
+  --surface-soft: #f5fbff;
+  --surface-muted: #dff2fc;
+
+  --border: #c2e5f6;
+  --border-strong: #91cfea;
+
+  --text-primary: #14324a;
+  --text-secondary: #315a73;
+  --text-muted: #5b7b91;
+  --text-faint: #88a5b6;
+
+  --primary: #087fbd;
+  --primary-hover: #056a9f;
+  --primary-soft: #dff3ff;
+
+  --header: rgba(255, 255, 255, 0.88);
+  --card: rgba(255, 255, 255, 0.94);
+
+  --glow: rgba(14, 165, 233, 0.14);
+}
+
+/* =========================================================
+   AEROSPACE THEME
+   ========================================================= */
+
+html[data-max-theme="aerospace"] {
+  --background: #050b12;
+  --foreground: #e8f4ff;
+
+  --surface: #0c1621;
+  --surface-soft: #101d2a;
+  --surface-muted: #162738;
+
+  --border: #263d52;
+  --border-strong: #3d5870;
+
+  --text-primary: #f4faff;
+  --text-secondary: #c5d9e9;
+  --text-muted: #8ca7bb;
+  --text-faint: #5c7589;
+
+  --primary: #35d7ff;
+  --primary-hover: #76e7ff;
+  --primary-soft: #073747;
+
+  --header: #07111b;
+  --card: #0c1621;
+
+  --glow: rgba(34, 211, 238, 0.16);
+}
+
+/* =========================================================
+   DOCUMENT
+   ========================================================= */
+
+html {
+  min-height: 100%;
+  background: var(--background);
+  color: var(--foreground);
+}
+
+body {
+  min-height: 100%;
+  margin: 0;
+  background: var(--background);
+  color: var(--foreground);
+
+  font-family:
+    var(--font-geist-sans),
+    Arial,
+    Helvetica,
+    sans-serif;
+
+  transition:
+    background-color 250ms ease,
+    color 250ms ease;
+}
+
+/* =========================================================
+   LIGHT BACKGROUND
+   ========================================================= */
+
+html[data-max-theme="light"] body {
+  background:
+    radial-gradient(
+      circle at 80% 0%,
+      rgba(59, 130, 246, 0.06),
+      transparent 30%
+    ),
+    #f4f7fb;
+}
+
+/* =========================================================
+   SKY BACKGROUND
+   ========================================================= */
+
+html[data-max-theme="sky"] body {
+  background:
+    radial-gradient(
+      circle at 5% 0%,
+      rgba(56, 189, 248, 0.20),
+      transparent 28%
+    ),
+    radial-gradient(
+      circle at 95% 5%,
+      rgba(125, 211, 252, 0.22),
+      transparent 30%
+    ),
+    linear-gradient(
+      135deg,
+      #edf9ff 0%,
+      #f7fcff 50%,
+      #e7f7ff 100%
+    );
+}
+
+/* =========================================================
+   DARK BACKGROUND
+   ========================================================= */
+
+html[data-max-theme="dark"] body {
+  background:
+    radial-gradient(
+      circle at 85% 0%,
+      rgba(37, 99, 235, 0.12),
+      transparent 30%
+    ),
+    radial-gradient(
+      circle at 10% 80%,
+      rgba(59, 130, 246, 0.05),
+      transparent 30%
+    ),
+    #0a0f18;
+}
+
+/* =========================================================
+   AEROSPACE BACKGROUND
+   ========================================================= */
+
+html[data-max-theme="aerospace"] body {
+  background:
+    radial-gradient(
+      circle at 20% 0%,
+      rgba(34, 211, 238, 0.10),
+      transparent 28%
+    ),
+    radial-gradient(
+      circle at 85% 15%,
+      rgba(59, 130, 246, 0.12),
+      transparent 32%
+    ),
+    linear-gradient(
+      135deg,
+      #050b12 0%,
+      #07121d 45%,
+      #040910 100%
+    );
+}
+
+/* =========================================================
+   GLOBAL SELECTION
+   ========================================================= */
+
+::selection {
+  background: var(--primary);
+  color: #ffffff;
+}
+
+/* =========================================================
+   SCROLLBAR
+   ========================================================= */
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-strong) transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: 999px;
+}
+
+/* =========================================================
+   HEADER
+   ========================================================= */
+
+html[data-max-theme="dark"] header,
+html[data-max-theme="aerospace"] header {
+  background-color: var(--header) !important;
+  border-color: var(--border) !important;
+}
+
+html[data-max-theme="sky"] header {
+  background-color: var(--header) !important;
+  border-color: var(--border) !important;
+  backdrop-filter: blur(18px);
+}
+
+/* Header text */
+
+html[data-max-theme="dark"] header .text-slate-950,
+html[data-max-theme="dark"] header .text-slate-900,
+html[data-max-theme="dark"] header .text-slate-800,
+html[data-max-theme="aerospace"] header .text-slate-950,
+html[data-max-theme="aerospace"] header .text-slate-900,
+html[data-max-theme="aerospace"] header .text-slate-800 {
+  color: var(--text-primary) !important;
+}
+
+html[data-max-theme="dark"] header .text-slate-600,
+html[data-max-theme="aerospace"] header .text-slate-600 {
+  color: var(--text-secondary) !important;
+}
+
+html[data-max-theme="dark"] header .text-slate-400,
+html[data-max-theme="aerospace"] header .text-slate-400 {
+  color: var(--text-muted) !important;
+}
+
+/* =========================================================
+   MAIN WHITE SURFACES
+   ========================================================= */
+
+html[data-max-theme="dark"] .bg-white,
+html[data-max-theme="aerospace"] .bg-white,
+html[data-max-theme="sky"] .bg-white {
+  background-color: var(--surface) !important;
+}
+
+/* =========================================================
+   DARK / AEROSPACE HERO
+   ========================================================= */
+
+/*
+   The Home page hero is intentionally transformed into
+   a premium command-center panel for dark themes.
+*/
+
+html[data-max-theme="dark"] main > section:first-child,
+html[data-max-theme="aerospace"] main > section:first-child {
+  background:
+    radial-gradient(
+      circle at 75% 30%,
+      rgba(37, 99, 235, 0.12),
+      transparent 35%
+    ),
+    var(--surface) !important;
+
+  border-color: var(--border) !important;
+  box-shadow:
+    0 20px 70px rgba(0, 0, 0, 0.25) !important;
+}
+
+/* Aerospace hero */
+
+html[data-max-theme="aerospace"] main > section:first-child {
+  background:
+    linear-gradient(
+      135deg,
+      #0b1622 0%,
+      #0b1724 45%,
+      #08111b 100%
+    ) !important;
+
+  border-color: #29445a !important;
+
+  box-shadow:
+    0 0 0 1px rgba(34, 211, 238, 0.04),
+    0 25px 80px rgba(0, 0, 0, 0.45) !important;
+}
+
+/* Sky hero */
+
+html[data-max-theme="sky"] main > section:first-child {
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.97),
+      rgba(240, 250, 255, 0.95)
+    ) !important;
+
+  border-color: #c3e5f5 !important;
+
+  box-shadow:
+    0 18px 55px rgba(14, 116, 144, 0.09) !important;
+}
+
+/* =========================================================
+   HERO TEXT
+   ========================================================= */
+
+html[data-max-theme="dark"] h1,
+html[data-max-theme="aerospace"] h1,
+html[data-max-theme="dark"] h2,
+html[data-max-theme="aerospace"] h2,
+html[data-max-theme="dark"] h3,
+html[data-max-theme="aerospace"] h3 {
+  color: var(--text-primary) !important;
+}
+
+html[data-max-theme="dark"] main .text-slate-500,
+html[data-max-theme="aerospace"] main .text-slate-500 {
+  color: var(--text-muted) !important;
+}
+
+html[data-max-theme="sky"] h1,
+html[data-max-theme="sky"] h2,
+html[data-max-theme="sky"] h3 {
+  color: var(--text-primary) !important;
+}
+
+/* =========================================================
+   HERO PRIMARY COLOR
+   ========================================================= */
+
+html[data-max-theme="aerospace"] .text-blue-600 {
+  color: #35d7ff !important;
+}
+
+html[data-max-theme="aerospace"] .bg-blue-600 {
+  background-color: #0ea5c9 !important;
+}
+
+html[data-max-theme="aerospace"] .hover\:bg-blue-700:hover {
+  background-color: #0891b2 !important;
+}
+
+html[data-max-theme="dark"] .text-blue-600 {
+  color: #69a8ff !important;
+}
+
+/* =========================================================
+   CARDS
+   ========================================================= */
+
+html[data-max-theme="dark"] .border-slate-200,
+html[data-max-theme="aerospace"] .border-slate-200,
+html[data-max-theme="sky"] .border-slate-200 {
+  border-color: var(--border) !important;
+}
+
+html[data-max-theme="dark"] .border-slate-100,
+html[data-max-theme="aerospace"] .border-slate-100,
+html[data-max-theme="sky"] .border-slate-100 {
+  border-color: var(--border) !important;
+}
+
+/* Dark cards */
+
+html[data-max-theme="dark"] main section .bg-white,
+html[data-max-theme="aerospace"] main section .bg-white {
+  background-color: var(--card) !important;
+}
+
+/* Card hover */
+
+html[data-max-theme="dark"] main a:hover,
+html[data-max-theme="aerospace"] main a:hover {
+  box-shadow:
+    0 15px 40px rgba(0, 0, 0, 0.30) !important;
+}
+
+html[data-max-theme="aerospace"] main a:hover {
+  border-color: rgba(34, 211, 238, 0.35) !important;
+}
+
+/* =========================================================
+   SLATE BACKGROUNDS
+   ========================================================= */
+
+html[data-max-theme="dark"] .bg-slate-50,
+html[data-max-theme="aerospace"] .bg-slate-50 {
+  background-color: var(--surface-soft) !important;
+}
+
+html[data-max-theme="dark"] .bg-slate-100,
+html[data-max-theme="aerospace"] .bg-slate-100 {
+  background-color: var(--surface-muted) !important;
+}
+
+html[data-max-theme="sky"] .bg-slate-50 {
+  background-color: #f4fbff !important;
+}
+
+html[data-max-theme="sky"] .bg-slate-100 {
+  background-color: #e2f4fc !important;
+}
+
+/* =========================================================
+   SLATE TEXT
+   ========================================================= */
+
+html[data-max-theme="dark"] .text-slate-950,
+html[data-max-theme="dark"] .text-slate-900,
+html[data-max-theme="dark"] .text-slate-800,
+html[data-max-theme="aerospace"] .text-slate-950,
+html[data-max-theme="aerospace"] .text-slate-900,
+html[data-max-theme="aerospace"] .text-slate-800 {
+  color: var(--text-primary) !important;
+}
+
+html[data-max-theme="dark"] .text-slate-700,
+html[data-max-theme="dark"] .text-slate-600,
+html[data-max-theme="aerospace"] .text-slate-700,
+html[data-max-theme="aerospace"] .text-slate-600 {
+  color: var(--text-secondary) !important;
+}
+
+html[data-max-theme="dark"] .text-slate-500,
+html[data-max-theme="aerospace"] .text-slate-500 {
+  color: var(--text-muted) !important;
+}
+
+html[data-max-theme="dark"] .text-slate-400,
+html[data-max-theme="aerospace"] .text-slate-400 {
+  color: var(--text-faint) !important;
+}
+
+/* =========================================================
+   SKY TEXT
+   ========================================================= */
+
+html[data-max-theme="sky"] .text-slate-950,
+html[data-max-theme="sky"] .text-slate-900,
+html[data-max-theme="sky"] .text-slate-800 {
+  color: var(--text-primary) !important;
+}
+
+html[data-max-theme="sky"] .text-slate-700,
+html[data-max-theme="sky"] .text-slate-600 {
+  color: var(--text-secondary) !important;
+}
+
+html[data-max-theme="sky"] .text-slate-500 {
+  color: var(--text-muted) !important;
+}
+
+/* =========================================================
+   BORDERS
+   ========================================================= */
+
+html[data-max-theme="dark"] .border-slate-100,
+html[data-max-theme="dark"] .border-slate-200,
+html[data-max-theme="aerospace"] .border-slate-100,
+html[data-max-theme="aerospace"] .border-slate-200 {
+  border-color: var(--border) !important;
+}
+
+html[data-max-theme="dark"] .border-slate-300,
+html[data-max-theme="aerospace"] .border-slate-300 {
+  border-color: var(--border-strong) !important;
+}
+
+/* =========================================================
+   DIVIDERS
+   ========================================================= */
+
+html[data-max-theme="dark"] .divide-slate-100 > :not(:last-child),
+html[data-max-theme="aerospace"] .divide-slate-100 > :not(:last-child) {
+  border-color: var(--border) !important;
+}
+
+/* =========================================================
+   INPUTS
+   ========================================================= */
+
+html[data-max-theme="dark"] input,
+html[data-max-theme="dark"] textarea,
+html[data-max-theme="dark"] select,
+html[data-max-theme="aerospace"] input,
+html[data-max-theme="aerospace"] textarea,
+html[data-max-theme="aerospace"] select {
+  background-color: var(--surface) !important;
+  color: var(--text-primary) !important;
+  border-color: var(--border) !important;
+}
+
+html[data-max-theme="sky"] input,
+html[data-max-theme="sky"] textarea,
+html[data-max-theme="sky"] select {
+  background-color: rgba(255, 255, 255, 0.92) !important;
+  color: var(--text-primary) !important;
+  border-color: var(--border) !important;
+}
+
+/* =========================================================
+   DARK MODE WHITE ICON CONTAINERS
+   ========================================================= */
+
+html[data-max-theme="dark"] .bg-white.shadow-sm,
+html[data-max-theme="aerospace"] .bg-white.shadow-sm {
+  background-color: var(--surface-muted) !important;
+}
+
+/* =========================================================
+   AEROSPACE GRID
+   ========================================================= */
+
+html[data-max-theme="aerospace"] main {
+  background-image:
+    linear-gradient(
+      rgba(34, 211, 238, 0.025) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      90deg,
+      rgba(34, 211, 238, 0.025) 1px,
+      transparent 1px
+    );
+
+  background-size: 42px 42px;
+}
+
+/* =========================================================
+   AEROSPACE GLOW
+   ========================================================= */
+
+html[data-max-theme="aerospace"] main > section:first-child::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+
+  background:
+    radial-gradient(
+      circle at 72% 45%,
+      rgba(34, 211, 238, 0.06),
+      transparent 30%
+    );
+
+  border-radius: inherit;
+}
+
+/* =========================================================
+   SKY GLASS EFFECT
+   ========================================================= */
+
+html[data-max-theme="sky"] main section {
+  backdrop-filter: blur(8px);
+}
+
+/* =========================================================
+   SHADOWS
+   ========================================================= */
+
+html[data-max-theme="dark"] .shadow-sm,
+html[data-max-theme="aerospace"] .shadow-sm {
+  box-shadow:
+    0 8px 30px rgba(0, 0, 0, 0.20) !important;
+}
+
+html[data-max-theme="sky"] .shadow-sm {
+  box-shadow:
+    0 8px 30px rgba(14, 116, 144, 0.07) !important;
+}
+
+/* =========================================================
+   HOVER BACKGROUNDS
+   ========================================================= */
+
+html[data-max-theme="dark"] .hover\:bg-slate-50:hover,
+html[data-max-theme="aerospace"] .hover\:bg-slate-50:hover {
+  background-color: var(--surface-soft) !important;
+}
+
+html[data-max-theme="dark"] .hover\:bg-slate-100:hover,
+html[data-max-theme="aerospace"] .hover\:bg-slate-100:hover {
+  background-color: var(--surface-muted) !important;
+}
+
+/* =========================================================
+   FOCUS
+   ========================================================= */
+
+:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+/* =========================================================
+   SMOOTH TRANSITIONS
+   ========================================================= */
+
+body,
+header,
+main,
+section,
+aside,
+nav,
+button,
+input,
+textarea,
+select {
+  transition:
+    background-color 220ms ease,
+    border-color 220ms ease,
+    color 220ms ease,
+    box-shadow 220ms ease;
+}
+
+/* =========================================================
+   ACCESSIBILITY
+   ========================================================= */
+
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* =========================================================
+   REDUCED MOTION
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
