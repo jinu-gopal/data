@@ -1,0 +1,3 @@
+company_name,customer_type,legalentity
+Validation Company A,Individual,TCS
+Validation Company B,InvalidType,TCS

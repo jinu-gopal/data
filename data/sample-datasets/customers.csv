@@ -1,0 +1,11 @@
+customer_code,company_name,customer_type,industry,email,phone,tax_id,credit_limit,payment_terms,billing_address,status
+CUST-1001,Apex Industrial Robotics,ENTERPRISE,MANUFACTURING,procurement@apexrobotics.com,+1-415-555-0101,US-94-2819201,500000,NET_30,"1000 Automation Pkwy, San Jose, CA 95134",ACTIVE
+CUST-1002,BioVance Health Solutions,ENTERPRISE,HEALTHCARE,finance@biovancehealth.com,+1-617-555-0142,US-04-3928102,750000,NET_45,"450 Innovation Way, Cambridge, MA 02142",ACTIVE
+CUST-1003,Starlight Software Systems,MID_MARKET,TECHNOLOGY,billing@starlightsoft.io,+1-206-555-0188,US-91-8472910,250000,NET_15,"800 Cloud Vista Blvd, Seattle, WA 98101",ACTIVE
+CUST-1004,Zenith Retail Group,ENTERPRISE,RETAIL,ap@zenithretail.com,+1-312-555-0177,US-36-7291823,1000000,NET_60,"200 Michigan Ave, Chicago, IL 60601",ACTIVE
+CUST-1005,Atlas Financial Advisory,MID_MARKET,FINANCIAL_SERVICES,invoices@atlasfin.com,+1-212-555-0155,US-13-8291039,400000,NET_30,"140 Wall St, New York, NY 10005",ACTIVE
+CUST-1006,Vanguard Freight & Haulage,MID_MARKET,LOGISTICS,accounts@vanguardhaulage.com,+1-972-555-0122,US-75-9182736,150000,NET_30,"1200 Logistics Way, Dallas, TX 75201",ACTIVE
+CUST-1007,Pinnacle Bio-Tech Labs,SMB,HEALTHCARE,admin@pinnaclebio.org,+1-858-555-0166,US-95-1829304,100000,NET_15,"300 Science Center Dr, San Diego, CA 92121",ACTIVE
+CUST-1008,Horizon Media Collective,SMB,RETAIL,finance@horizonmedia.co,+1-310-555-0199,US-95-8291045,75000,IMMEDIATE,"500 Sunset Blvd, Los Angeles, CA 90028",PROSPECT
+CUST-1009,National Renewable Power,ENTERPRISE,MANUFACTURING,contracts@nationalrenewable.com,+1-303-555-0133,US-84-7192830,850000,NET_45,"700 Windcrest Way, Denver, CO 80202",ACTIVE
+CUST-1010,Metro State Transit Auth,GOVERNMENT,LOGISTICS,vendorinvoices@metrostate.gov,+1-202-555-0111,US-53-9182049,2000000,NET_60,"900 Independence Ave SW, Washington, DC 20024",ACTIVE

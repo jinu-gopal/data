@@ -1,0 +1,4 @@
+role_key,name,description,permissions
+compliance_auditor,Compliance & Security Auditor,Audits security role assignments and access records,SECURITY.USER_ROLE_ASSIGN|SECURITY.ACCESS_MANAGE
+access_coordinator,Tenant Access Coordinator,Manages organization-level user access and role assignments,SECURITY.USER_ROLE_ASSIGN|SECURITY.ACCESS_MANAGE
+security_officer,Chief Information Security Officer,Governs global security roles and policies,SECURITY.ROLE_MANAGE|SECURITY.ROLE_PERMISSION_MANAGE|SECURITY.ACCESS_MANAGE

@@ -1,0 +1,9 @@
+vendor_code,vendor_name,vendor_category,tax_id,email,phone,payment_terms,currency,status,lead_time_days
+VEND-2001,Silicon Wave Semi-Conductors,HARDWARE,US-77-2918203,orders@siliconwave.com,+1-408-555-0211,NET_30,USD,ACTIVE,14
+VEND-2002,Global Freight Express,LOGISTICS,US-47-8192039,dispatch@globalfreight.com,+1-773-555-0244,NET_30,USD,ACTIVE,5
+VEND-2003,Polymer & Alloy Industrial,RAW_MATERIALS,US-31-9281048,sales@polymeralloy.com,+1-216-555-0233,NET_45,USD,ACTIVE,21
+VEND-2004,Nordic Precision Sensors,HARDWARE,DE-81-2910394,b2b@nordicsensors.de,+49-89-555-0277,NET_30,EUR,ACTIVE,10
+VEND-2005,Optima Cloud Infrastructure,SOFTWARE_SERVICES,US-94-1829302,enterprise@optimacloud.net,+1-415-555-0288,IMMEDIATE,USD,ACTIVE,1
+VEND-2006,Sterling Advisory Partners,CONSULTING,GB-98-3829102,invoicing@sterlingadvisory.co.uk,+44-20-7555-0299,NET_30,GBP,ACTIVE,7
+VEND-2007,Apex Metal Extrusions,RAW_MATERIALS,US-48-9182730,orders@apexmetal.com,+1-713-555-0255,NET_60,USD,ACTIVE,30
+VEND-2008,Pacific Pack & Ship Co,LOGISTICS,US-93-1829401,accounts@pacificpack.com,+1-503-555-0266,NET_30,USD,ACTIVE,3
