@@ -70,8 +70,40 @@ export default function ChoiceFieldOptions({
   }
 
   useEffect(() => {
-    loadOptions();
-  }, [fieldId, fieldType, businessObjectId]);
+    let ignore = false;
+
+    if (!fieldId || !isChoice) {
+      return;
+    }
+
+    fetch(
+      `/api/configuration/business-objects/${businessObjectId}/fields/${fieldId}/options`
+    )
+      .then((res) => {
+        if (!res.ok) throw new Error("Unable to load field options.");
+        return res.json();
+      })
+      .then((data) => {
+        if (!ignore) {
+          setOptions(Array.isArray(data) ? data : []);
+          setLoading(false);
+        }
+      })
+      .catch((err) => {
+        if (!ignore) {
+          setError(
+            err instanceof Error
+              ? err.message
+              : "Unable to load field options."
+          );
+          setLoading(false);
+        }
+      });
+
+    return () => {
+      ignore = true;
+    };
+  }, [fieldId, isChoice, businessObjectId]);
 
   function resetForm() {
     setEditingOption(null);
@@ -138,7 +170,7 @@ export default function ChoiceFieldOptions({
       };
 
       const url = editingOption
-        ? `/api/configuration/business-objects/${businessObjectId}/fields/${fieldId}/options/${editingOption.id}`
+        ? `/api/configuration/business-objects/${businessObjectId}/fields/${fieldId}/options?optionId=${encodeURIComponent(editingOption.id)}`
         : `/api/configuration/business-objects/${businessObjectId}/fields/${fieldId}/options`;
 
       const response = await fetch(url, {
@@ -182,7 +214,7 @@ export default function ChoiceFieldOptions({
 
     try {
       const response = await fetch(
-        `/api/configuration/business-objects/${businessObjectId}/fields/${fieldId}/options/${option.id}`,
+        `/api/configuration/business-objects/${businessObjectId}/fields/${fieldId}/options?optionId=${encodeURIComponent(option.id)}`,
         {
           method: "DELETE",
         }

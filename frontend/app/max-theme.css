@@ -1,206 +1,358 @@
 /* =========================================================
-   MAX ERP — PREMIUM THEME SYSTEM
-   Four deliberately different visual identities
+   MAX ERP — ROYAL ENTERPRISE DESIGN SYSTEM
+   High-End, Rich Royal Visual Architecture
    ========================================================= */
 
-@import "tailwindcss";
-
 /* =========================================================
-   PLATINUM
-   Luxury enterprise
-   White / silver / royal blue
+   PLATINUM — IMPERIAL ROYAL LIGHT
+   Opulent Alabaster / Deep Royal Sapphire / Champagne Gold
    ========================================================= */
 
 html.max-theme-platinum {
-  --max-bg: #eef1f5;
-  --max-bg-image:
-    radial-gradient(
-      circle at 85% 0%,
-      rgba(255,255,255,0.95) 0,
-      transparent 35%
-    );
+  --max-bg: #f8fafc;
+  --max-background: var(--max-bg);
+  --max-bg-image: none;
 
   --max-surface: #ffffff;
-  --max-surface-2: #f7f8fa;
-  --max-surface-3: #edf0f4;
+  --max-surface-2: #f8fafc;
+  --max-surface-3: #f1f5f9;
+  --max-surface-hover: #f1f5f9;
 
-  --max-text: #172033;
-  --max-text-secondary: #647084;
-  --max-text-muted: #9aa4b2;
+  --max-text: #0f172a;
+  --max-text-secondary: #334155;
+  --max-text-muted: #64748b;
 
-  --max-border: #d9dee7;
-  --max-border-soft: #e9edf2;
+  --max-border: #e2e8f0;
+  --max-border-soft: #f1f5f9;
+  --max-border-royal: #cbd5e1;
 
-  --max-primary: #1d4ed8;
-  --max-primary-hover: #1e40af;
-  --max-primary-soft: #eaf0ff;
+  --max-primary: #2563eb;
+  --max-primary-hover: #1d4ed8;
+  --max-primary-soft: #eff6ff;
+  --max-primary-gradient: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
 
-  --max-accent: #8b9cff;
+  --max-accent: #86bc25;
+  --max-accent-soft: rgba(134, 188, 37, 0.12);
+  --max-gold: #0284c7;
 
-  --max-sidebar: #fbfcfd;
-  --max-topbar: rgba(255,255,255,0.96);
+  --max-sidebar: #ffffff;
+  --max-topbar: #ffffff;
 
-  --max-card-radius: 16px;
+  --max-card-radius: 12px;
 
   --max-shadow:
-    0 8px 25px rgba(30,41,59,0.07);
+    0 1px 3px rgba(15, 23, 42, 0.04),
+    0 4px 6px -1px rgba(15, 23, 42, 0.05);
 
   --max-shadow-lg:
-    0 25px 65px rgba(30,41,59,0.11);
+    0 10px 15px -3px rgba(15, 23, 42, 0.08),
+    0 4px 6px -4px rgba(15, 23, 42, 0.04);
+
+  --max-glow: 0 0 0 transparent;
 }
 
 /* =========================================================
-   OBSIDIAN
-   Executive dark
-   Black / graphite / violet
+   OBSIDIAN — EXECUTIVE MATTE GRAPHITE (APPLE LUXURY DARK)
+   Deep Matte Obsidian / Charcoal Slate / Silver & Cyan
    ========================================================= */
 
 html.max-theme-obsidian {
-  --max-bg: #08090c;
+  --max-bg: #0c0d10;
+  --max-background: var(--max-bg);
+  --max-bg-image: none;
 
-  --max-bg-image:
-    radial-gradient(
-      circle at 15% 0%,
-      rgba(139,92,246,0.16),
-      transparent 30%
-    ),
-    radial-gradient(
-      circle at 90% 100%,
-      rgba(59,130,246,0.08),
-      transparent 28%
-    );
+  --max-surface: #141519;
+  --max-surface-2: #1a1b20;
+  --max-surface-3: #22232a;
+  --max-surface-hover: #272831;
 
-  --max-surface: #111318;
-  --max-surface-2: #17191f;
-  --max-surface-3: #1d2028;
+  --max-text: #ffffff;
+  --max-text-secondary: #9ca3af;
+  --max-text-muted: #6b7280;
 
-  --max-text: #f4f1ff;
-  --max-text-secondary: #aaa7b8;
-  --max-text-muted: #6f7180;
+  --max-border: rgba(255, 255, 255, 0.08);
+  --max-border-soft: rgba(255, 255, 255, 0.05);
+  --max-border-royal: rgba(255, 255, 255, 0.16);
 
-  --max-border: #2a2d36;
-  --max-border-soft: #20232b;
+  --max-primary: #38bdf8;
+  --max-primary-hover: #7dd3fc;
+  --max-primary-soft: rgba(56, 189, 248, 0.12);
+  --max-primary-gradient: linear-gradient(180deg, #22232a 0%, #17181d 100%);
 
-  --max-primary: #9b7cff;
-  --max-primary-hover: #b19aff;
-  --max-primary-soft: rgba(139,92,246,0.14);
+  --max-accent: #38bdf8;
+  --max-accent-soft: rgba(56, 189, 248, 0.12);
+  --max-gold: #f59e0b;
 
-  --max-accent: #c4b5fd;
+  --max-sidebar: #090a0c;
+  --max-topbar: rgba(12, 13, 16, 0.94);
 
-  --max-sidebar: #0c0d11;
-  --max-topbar: rgba(12,13,17,0.94);
-
-  --max-card-radius: 14px;
+  --max-card-radius: 20px;
 
   --max-shadow:
-    0 15px 45px rgba(0,0,0,0.45);
+    0 4px 20px rgba(0, 0, 0, 0.45);
 
   --max-shadow-lg:
-    0 30px 90px rgba(0,0,0,0.65);
+    0 16px 45px rgba(0, 0, 0, 0.65);
+
+  --max-glow: 0 0 25px rgba(255, 255, 255, 0.08);
 }
 
 /* =========================================================
-   ARCTIC
-   Modern cloud
-   Ice / white / cyan / teal
+   MIDNIGHT — COMMAND CENTER NAVY (IMPERIAL SAPPHIRE)
+   Deep Ocean Navy / Celestial Azure / Electric Cyan
+   ========================================================= */
+
+html.max-theme-midnight {
+  --max-bg: #030712;
+  --max-background: var(--max-bg);
+
+  --max-bg-image:
+    radial-gradient(
+      ellipse at 50% -10%,
+      rgba(2, 132, 199, 0.28) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      ellipse at 100% 50%,
+      rgba(37, 99, 235, 0.18) 0%,
+      transparent 45%
+    ),
+    radial-gradient(
+      ellipse at 0% 100%,
+      rgba(14, 165, 233, 0.10) 0%,
+      transparent 50%
+    );
+
+  --max-surface: #071326;
+  --max-surface-2: #0c1f3b;
+  --max-surface-3: #122b50;
+  --max-surface-hover: #163563;
+
+  --max-text: #f0f9ff;
+  --max-text-secondary: #93c5fd;
+  --max-text-muted: #60a5fa;
+
+  --max-border: rgba(56, 189, 248, 0.22);
+  --max-border-soft: rgba(14, 165, 233, 0.12);
+  --max-border-royal: rgba(56, 189, 248, 0.40);
+
+  --max-primary: #0ea5e9;
+  --max-primary-hover: #38bdf8;
+  --max-primary-soft: rgba(14, 165, 233, 0.15);
+  --max-primary-gradient: linear-gradient(135deg, #0284c7 0%, #0ea5e9 50%, #38bdf8 100%);
+
+  --max-accent: #38bdf8;
+  --max-accent-soft: rgba(56, 189, 248, 0.14);
+  --max-gold: #f59e0b;
+
+  --max-sidebar: #040b17;
+  --max-topbar: rgba(4, 11, 23, 0.90);
+
+  --max-card-radius: 18px;
+
+  --max-shadow:
+    0 15px 45px rgba(0, 0, 0, 0.55),
+    0 0 25px rgba(14, 165, 233, 0.10);
+
+  --max-shadow-lg:
+    0 35px 95px rgba(0, 0, 0, 0.75),
+    0 0 45px rgba(14, 165, 233, 0.18);
+
+  --max-glow: 0 0 35px rgba(14, 165, 233, 0.25);
+}
+
+/* =========================================================
+   ARCTIC — NORDIC OPAL & ROYAL ICE
+   Crystalline Frost / Frosted Pearl / Glacier Azure
    ========================================================= */
 
 html.max-theme-arctic {
-  --max-bg: #eaf6fb;
+  --max-bg: #eef5fb;
+  --max-background: var(--max-bg);
 
   --max-bg-image:
     radial-gradient(
       circle at 10% 10%,
-      rgba(255,255,255,0.95),
+      rgba(255, 255, 255, 0.98),
       transparent 35%
     ),
     radial-gradient(
       circle at 90% 10%,
-      rgba(103,232,249,0.18),
+      rgba(6, 182, 212, 0.12),
       transparent 32%
+    ),
+    radial-gradient(
+      circle at 50% 100%,
+      rgba(59, 130, 246, 0.06),
+      transparent 40%
     );
 
-  --max-surface: rgba(255,255,255,0.82);
-  --max-surface-2: rgba(255,255,255,0.62);
-  --max-surface-3: #dff1f7;
+  --max-surface: rgba(255, 255, 255, 0.90);
+  --max-surface-2: rgba(255, 255, 255, 0.70);
+  --max-surface-3: #e2eef7;
+  --max-surface-hover: #daf0fa;
 
-  --max-text: #123044;
-  --max-text-secondary: #557083;
-  --max-text-muted: #8299a8;
+  --max-text: #0c2340;
+  --max-text-secondary: #335c80;
+  --max-text-muted: #688fae;
 
-  --max-border: rgba(126,181,201,0.38);
-  --max-border-soft: rgba(126,181,201,0.22);
+  --max-border: rgba(126, 181, 201, 0.40);
+  --max-border-soft: rgba(126, 181, 201, 0.22);
+  --max-border-royal: rgba(8, 145, 178, 0.45);
 
-  --max-primary: #0891b2;
-  --max-primary-hover: #0e7490;
-  --max-primary-soft: #dff8fc;
+  --max-primary: #0284c7;
+  --max-primary-hover: #0369a1;
+  --max-primary-soft: rgba(2, 132, 199, 0.10);
+  --max-primary-gradient: linear-gradient(135deg, #0284c7 0%, #06b6d4 100%);
 
-  --max-accent: #22c7d6;
+  --max-accent: #06b6d4;
+  --max-accent-soft: rgba(6, 182, 212, 0.12);
+  --max-gold: #f59e0b;
 
-  --max-sidebar: rgba(248,253,255,0.78);
-  --max-topbar: rgba(248,253,255,0.72);
+  --max-sidebar: rgba(248, 253, 255, 0.88);
+  --max-topbar: rgba(248, 253, 255, 0.82);
 
-  --max-card-radius: 22px;
+  --max-card-radius: 20px;
 
   --max-shadow:
-    0 12px 35px rgba(14,116,144,0.09);
+    0 10px 30px rgba(12, 35, 64, 0.08);
 
   --max-shadow-lg:
-    0 30px 80px rgba(14,116,144,0.14);
+    0 25px 70px rgba(12, 35, 64, 0.12);
+
+  --max-glow: 0 0 25px rgba(6, 182, 212, 0.20);
 }
 
 /* =========================================================
-   MIDNIGHT
-   Command center
-   Navy / blue / cyan
+   EMERALD — EMERALD SOVEREIGN (SWISS WEALTH & 24K GOLD)
+   Deep Forest Malachite / Sovereign Gold / Emerald Glow
    ========================================================= */
 
-html.max-theme-midnight {
-  --max-bg: #050d18;
+html.max-theme-emerald {
+  --max-bg: #050e09;
+  --max-background: var(--max-bg);
 
   --max-bg-image:
     radial-gradient(
-      circle at 50% -10%,
-      rgba(37,99,235,0.25),
-      transparent 38%
+      ellipse at 50% -10%,
+      rgba(16, 185, 129, 0.24) 0%,
+      transparent 50%
     ),
     radial-gradient(
-      circle at 100% 60%,
-      rgba(6,182,212,0.10),
-      transparent 30%
+      ellipse at 100% 50%,
+      rgba(5, 150, 105, 0.16) 0%,
+      transparent 45%
+    ),
+    radial-gradient(
+      ellipse at 0% 100%,
+      rgba(245, 158, 11, 0.08) 0%,
+      transparent 50%
     );
 
-  --max-surface: #0b1728;
-  --max-surface-2: #0f2035;
-  --max-surface-3: #142b46;
+  --max-surface: #0a1a12;
+  --max-surface-2: #0f261b;
+  --max-surface-3: #163627;
+  --max-surface-hover: #1b4230;
 
-  --max-text: #edf7ff;
-  --max-text-secondary: #9db5ca;
-  --max-text-muted: #617b92;
+  --max-text: #ecfdf5;
+  --max-text-secondary: #a7f3d0;
+  --max-text-muted: #6ee7b7;
 
-  --max-border: #1c3c5c;
-  --max-border-soft: #142d47;
+  --max-border: rgba(16, 185, 129, 0.22);
+  --max-border-soft: rgba(16, 185, 129, 0.12);
+  --max-border-royal: rgba(16, 185, 129, 0.45);
 
-  --max-primary: #22a7ff;
-  --max-primary-hover: #55bcff;
-  --max-primary-soft: rgba(34,167,255,0.12);
+  --max-primary: #10b981;
+  --max-primary-hover: #34d399;
+  --max-primary-soft: rgba(16, 185, 129, 0.15);
+  --max-primary-gradient: linear-gradient(135deg, #047857 0%, #10b981 50%, #34d399 100%);
 
-  --max-accent: #22d3ee;
+  --max-accent: #f59e0b;
+  --max-accent-soft: rgba(245, 158, 11, 0.14);
+  --max-gold: #fbbf24;
 
-  --max-sidebar: #06101d;
-  --max-topbar: rgba(6,16,29,0.94);
+  --max-sidebar: #040d08;
+  --max-topbar: rgba(5, 14, 9, 0.92);
 
-  --max-card-radius: 16px;
+  --max-card-radius: 18px;
 
   --max-shadow:
-    0 18px 55px rgba(0,0,0,0.42);
+    0 15px 45px rgba(0, 0, 0, 0.55),
+    0 0 25px rgba(16, 185, 129, 0.10);
 
   --max-shadow-lg:
-    0 35px 100px rgba(0,0,0,0.58);
+    0 35px 95px rgba(0, 0, 0, 0.75),
+    0 0 45px rgba(16, 185, 129, 0.18);
+
+  --max-glow: 0 0 35px rgba(16, 185, 129, 0.25);
 }
 
 /* =========================================================
-   GLOBAL
+   AMETHYST — ROYAL AMETHYST (IMPERIAL VELVET & ROSE GOLD)
+   Imperial Velvet Violet / Royal Rose / Radiant Quartz
+   ========================================================= */
+
+html.max-theme-amethyst {
+  --max-bg: #090611;
+  --max-background: var(--max-bg);
+
+  --max-bg-image:
+    radial-gradient(
+      ellipse at 50% -10%,
+      rgba(168, 85, 247, 0.26) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      ellipse at 100% 50%,
+      rgba(217, 70, 239, 0.16) 0%,
+      transparent 45%
+    ),
+    radial-gradient(
+      ellipse at 0% 100%,
+      rgba(244, 63, 94, 0.08) 0%,
+      transparent 50%
+    );
+
+  --max-surface: #130c22;
+  --max-surface-2: #1c1231;
+  --max-surface-3: #261942;
+  --max-surface-hover: #312154;
+
+  --max-text: #faf5ff;
+  --max-text-secondary: #e9d5ff;
+  --max-text-muted: #c084fc;
+
+  --max-border: rgba(168, 85, 247, 0.22);
+  --max-border-soft: rgba(168, 85, 247, 0.12);
+  --max-border-royal: rgba(168, 85, 247, 0.45);
+
+  --max-primary: #a855f7;
+  --max-primary-hover: #c084fc;
+  --max-primary-soft: rgba(168, 85, 247, 0.15);
+  --max-primary-gradient: linear-gradient(135deg, #7e22ce 0%, #a855f7 50%, #c084fc 100%);
+
+  --max-accent: #f43f5e;
+  --max-accent-soft: rgba(244, 63, 94, 0.14);
+  --max-gold: #f59e0b;
+
+  --max-sidebar: #07040d;
+  --max-topbar: rgba(9, 6, 17, 0.92);
+
+  --max-card-radius: 18px;
+
+  --max-shadow:
+    0 15px 45px rgba(0, 0, 0, 0.55),
+    0 0 25px rgba(168, 85, 247, 0.10);
+
+  --max-shadow-lg:
+    0 35px 95px rgba(0, 0, 0, 0.75),
+    0 0 45px rgba(168, 85, 247, 0.18);
+
+  --max-glow: 0 0 35px rgba(168, 85, 247, 0.25);
+}
+
+/* =========================================================
+   GLOBAL BASE STYLING
    ========================================================= */
 
 html,
@@ -212,208 +364,84 @@ body {
   background:
     var(--max-bg-image),
     var(--max-bg);
-
   color: var(--max-text);
-
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   transition:
-    background 300ms ease,
+    background-color 300ms cubic-bezier(0.16, 1, 0.3, 1),
     color 200ms ease;
 }
 
 /* =========================================================
-   PLATINUM — WHITE / SILVER
+   HEADER & NAVIGATION SURFACES
    ========================================================= */
 
-html.max-theme-platinum .bg-white {
-  background: var(--max-surface) !important;
-}
-
-html.max-theme-platinum .bg-slate-50 {
-  background: var(--max-surface-2) !important;
-}
-
-html.max-theme-platinum .border-slate-200,
-html.max-theme-platinum .border-slate-100 {
-  border-color: var(--max-border) !important;
-}
+/* Components manage their own crisp surfaces via Tailwind utility classes */
 
 /* =========================================================
-   ARCTIC — GLASS SURFACES
+   ROYAL UTILITY CLASSES (High-End Enterprise Look)
    ========================================================= */
 
-html.max-theme-arctic .bg-white {
-  background: var(--max-surface) !important;
-  backdrop-filter: blur(20px);
+.royal-crest {
+  background: linear-gradient(135deg, #1e40af 0%, #3b82f6 50%, #1e1b4b 100%);
+  border: 1px solid rgba(245, 158, 11, 0.40);
+  box-shadow: 0 4px 14px 0 rgba(30, 64, 175, 0.35);
 }
 
-html.max-theme-arctic .bg-slate-50 {
-  background: var(--max-surface-2) !important;
-  backdrop-filter: blur(20px);
-}
-
-html.max-theme-arctic .rounded-2xl.border,
-html.max-theme-arctic .rounded-3xl.border {
+.royal-card {
+  background: var(--max-surface);
+  border: 1px solid var(--max-border);
+  border-radius: var(--max-card-radius);
   box-shadow: var(--max-shadow);
-  backdrop-filter: blur(18px);
+  transition: all 250ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.royal-card:hover {
+  border-color: var(--max-primary);
+  box-shadow: var(--max-shadow-lg);
+}
+
+.royal-pill-active {
+  background: var(--max-primary-gradient);
+  color: #ffffff;
+  box-shadow: 0 4px 14px 0 rgba(37, 99, 235, 0.30);
+}
+
+.royal-badge-gold {
+  background: rgba(245, 158, 11, 0.12);
+  border: 1px solid rgba(245, 158, 11, 0.35);
+  color: #d97706;
+}
+
+.dark .royal-badge-gold,
+html.max-theme-obsidian .royal-badge-gold,
+html.max-theme-midnight .royal-badge-gold,
+html.max-theme-emerald .royal-badge-gold,
+html.max-theme-amethyst .royal-badge-gold {
+  color: #fbbf24;
+  border-color: rgba(245, 158, 11, 0.45);
+}
+
+.royal-badge-sapphire {
+  background: var(--max-primary-soft);
+  border: 1px solid var(--max-border-royal);
+  color: var(--max-primary);
+}
+
+.royal-btn-primary {
+  background: var(--max-primary-gradient);
+  color: #ffffff;
+  font-weight: 700;
+  box-shadow: 0 4px 14px 0 rgba(37, 99, 235, 0.30);
+  transition: all 200ms ease;
+}
+
+.royal-btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px 0 rgba(37, 99, 235, 0.40);
 }
 
 /* =========================================================
-   OBSIDIAN — GRAPHITE SURFACES
-   ========================================================= */
-
-html.max-theme-obsidian .bg-white {
-  background: var(--max-surface) !important;
-}
-
-html.max-theme-obsidian .bg-slate-50 {
-  background: var(--max-surface-2) !important;
-}
-
-html.max-theme-obsidian .border-slate-200,
-html.max-theme-obsidian .border-slate-100 {
-  border-color: var(--max-border) !important;
-}
-
-html.max-theme-obsidian .text-slate-950,
-html.max-theme-obsidian .text-slate-900,
-html.max-theme-obsidian .text-slate-800 {
-  color: var(--max-text) !important;
-}
-
-html.max-theme-obsidian .text-slate-700,
-html.max-theme-obsidian .text-slate-600,
-html.max-theme-obsidian .text-slate-500 {
-  color: var(--max-text-secondary) !important;
-}
-
-html.max-theme-obsidian .text-slate-400 {
-  color: var(--max-text-muted) !important;
-}
-
-/* =========================================================
-   MIDNIGHT — NAVY LAYERS
-   ========================================================= */
-
-html.max-theme-midnight .bg-white {
-  background: var(--max-surface) !important;
-}
-
-html.max-theme-midnight .bg-slate-50 {
-  background: var(--max-surface-2) !important;
-}
-
-html.max-theme-midnight .border-slate-200,
-html.max-theme-midnight .border-slate-100 {
-  border-color: var(--max-border) !important;
-}
-
-html.max-theme-midnight .text-slate-950,
-html.max-theme-midnight .text-slate-900,
-html.max-theme-midnight .text-slate-800 {
-  color: var(--max-text) !important;
-}
-
-html.max-theme-midnight .text-slate-700,
-html.max-theme-midnight .text-slate-600,
-html.max-theme-midnight .text-slate-500 {
-  color: var(--max-text-secondary) !important;
-}
-
-html.max-theme-midnight .text-slate-400 {
-  color: var(--max-text-muted) !important;
-}
-
-/* =========================================================
-   PRIMARY BUTTONS
-   ========================================================= */
-
-html.max-theme-platinum .bg-blue-600 {
-  background: var(--max-primary) !important;
-}
-
-html.max-theme-arctic .bg-blue-600 {
-  background: var(--max-primary) !important;
-}
-
-html.max-theme-obsidian .bg-blue-600 {
-  background: var(--max-primary) !important;
-}
-
-html.max-theme-midnight .bg-blue-600 {
-  background: var(--max-primary) !important;
-}
-
-/* =========================================================
-   PRIMARY SOFT AREAS
-   ========================================================= */
-
-html.max-theme-platinum .bg-blue-50,
-html.max-theme-arctic .bg-blue-50,
-html.max-theme-obsidian .bg-blue-50,
-html.max-theme-midnight .bg-blue-50 {
-  background: var(--max-primary-soft) !important;
-}
-
-/* =========================================================
-   PRIMARY TEXT
-   ========================================================= */
-
-html.max-theme-platinum .text-blue-600,
-html.max-theme-arctic .text-blue-600,
-html.max-theme-obsidian .text-blue-600,
-html.max-theme-midnight .text-blue-600 {
-  color: var(--max-primary) !important;
-}
-
-/* =========================================================
-   HEADER
-   ========================================================= */
-
-html.max-theme-platinum header {
-  background: var(--max-topbar) !important;
-  border-color: var(--max-border) !important;
-}
-
-html.max-theme-arctic header {
-  background: var(--max-topbar) !important;
-  border-color: var(--max-border) !important;
-  backdrop-filter: blur(20px);
-}
-
-html.max-theme-obsidian header {
-  background: var(--max-topbar) !important;
-  border-color: var(--max-border) !important;
-  backdrop-filter: blur(20px);
-}
-
-html.max-theme-midnight header {
-  background: var(--max-topbar) !important;
-  border-color: var(--max-border) !important;
-  backdrop-filter: blur(20px);
-}
-
-/* =========================================================
-   CARD CHARACTER
-   ========================================================= */
-
-html.max-theme-platinum .rounded-2xl.border {
-  box-shadow: var(--max-shadow);
-}
-
-html.max-theme-obsidian .rounded-2xl.border {
-  box-shadow: var(--max-shadow);
-}
-
-html.max-theme-midnight .rounded-2xl.border {
-  box-shadow: var(--max-shadow);
-}
-
-html.max-theme-arctic .rounded-2xl.border {
-  box-shadow: var(--max-shadow);
-}
-
-/* =========================================================
-   DARK THEME INPUTS
+   INPUTS & CONTROLS
    ========================================================= */
 
 html.max-theme-obsidian input,
@@ -421,47 +449,84 @@ html.max-theme-obsidian textarea,
 html.max-theme-obsidian select,
 html.max-theme-midnight input,
 html.max-theme-midnight textarea,
-html.max-theme-midnight select {
+html.max-theme-midnight select,
+html.max-theme-emerald input,
+html.max-theme-emerald textarea,
+html.max-theme-emerald select,
+html.max-theme-amethyst input,
+html.max-theme-amethyst textarea,
+html.max-theme-amethyst select {
   background: var(--max-surface-2);
   color: var(--max-text);
   border-color: var(--max-border);
 }
 
+html.max-theme-platinum input,
+html.max-theme-platinum textarea,
+html.max-theme-platinum select,
+html.max-theme-arctic input,
+html.max-theme-arctic textarea,
+html.max-theme-arctic select {
+  background: var(--max-surface);
+  color: var(--max-text);
+  border-color: var(--max-border);
+}
+
 /* =========================================================
-   SCROLLBARS
+   LUXURY SCROLLBARS
    ========================================================= */
 
 html.max-theme-obsidian,
 html.max-theme-midnight {
-  scrollbar-color: #354a62 transparent;
+  scrollbar-color: #1e3a8a transparent;
+}
+
+html.max-theme-emerald {
+  scrollbar-color: #065f46 transparent;
+}
+
+html.max-theme-amethyst {
+  scrollbar-color: #6b21a8 transparent;
 }
 
 html.max-theme-platinum {
-  scrollbar-color: #c5ccd7 transparent;
+  scrollbar-color: #cbd5e1 transparent;
 }
 
 html.max-theme-arctic {
-  scrollbar-color: #9bc9d8 transparent;
+  scrollbar-color: #94d2e6 transparent;
 }
 
 /* =========================================================
-   SELECTION
+   TEXT SELECTION
    ========================================================= */
 
 html.max-theme-platinum ::selection {
-  background: rgba(29,78,216,0.18);
+  background: rgba(29, 78, 216, 0.18);
+  color: #0b132b;
 }
 
 html.max-theme-arctic ::selection {
-  background: rgba(8,145,178,0.20);
+  background: rgba(2, 132, 199, 0.20);
+  color: #0c2340;
 }
 
 html.max-theme-obsidian ::selection {
-  background: rgba(155,124,255,0.30);
-  color: white;
+  background: rgba(59, 130, 246, 0.35);
+  color: #ffffff;
 }
 
 html.max-theme-midnight ::selection {
-  background: rgba(34,167,255,0.30);
-  color: white;
+  background: rgba(14, 165, 233, 0.35);
+  color: #ffffff;
+}
+
+html.max-theme-emerald ::selection {
+  background: rgba(16, 185, 129, 0.35);
+  color: #ffffff;
+}
+
+html.max-theme-amethyst ::selection {
+  background: rgba(168, 85, 247, 0.35);
+  color: #ffffff;
 }

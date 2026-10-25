@@ -1,8 +1,9 @@
 "use client";
 
-
+import MaxShell from "@/components/max/MaxShell";
 import TypeSpecificFieldSettings from "@/components/configuration/fields/TypeSpecificFieldSettings";
 import ChoiceFieldOptions from "@/components/configuration/fields/ChoiceFieldOptions";
+import ReferenceFieldSettings from "@/components/configuration/fields/ReferenceFieldSettings";
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 
@@ -219,6 +220,15 @@ function parseApiError(
   }
 }
 
+type BusinessObject = {
+  id: string;
+  objectKey: string;
+  name: string;
+  description: string | null;
+  status: string;
+  versionNumber?: number;
+};
+
 export default function BusinessObjectPage() {
   const params = useParams();
   const router = useRouter();
@@ -227,6 +237,19 @@ export default function BusinessObjectPage() {
     typeof params.businessObjectId === "string"
       ? params.businessObjectId
       : "";
+
+  const [businessObject, setBusinessObject] =
+    useState<BusinessObject | null>(null);
+  const [showEditObject, setShowEditObject] =
+    useState(false);
+  const [editObjectName, setEditObjectName] =
+    useState("");
+  const [editObjectDescription, setEditObjectDescription] =
+    useState("");
+  const [showPublishModal, setShowPublishModal] =
+    useState(false);
+  const [publishing, setPublishing] =
+    useState(false);
 
   const [fields, setFields] = useState<Field[]>([]);
   const [loading, setLoading] = useState(true);
@@ -243,7 +266,6 @@ export default function BusinessObjectPage() {
 
   const [openActionsId, setOpenActionsId] =
     useState<string | null>(null);
-
 
   const [showDeleteField, setShowDeleteField] =
     useState(false);
@@ -360,8 +382,202 @@ export default function BusinessObjectPage() {
   }
 
   useEffect(() => {
-    loadFields();
+    let ignore = false;
+
+    if (!businessObjectId) {
+      return;
+    }
+
+    fetch(
+      `/api/configuration/business-objects/${businessObjectId}/fields`,
+      {
+        method: "GET",
+        cache: "no-store",
+      }
+    )
+      .then(async (response) => {
+        const text = await response.text();
+
+        if (!response.ok) {
+          throw new Error(
+            parseApiError(
+              text,
+              response.status,
+              "Load fields"
+            )
+          );
+        }
+
+        if (!text) {
+          return [];
+        }
+
+        return JSON.parse(text);
+      })
+      .then((data) => {
+        if (!ignore) {
+          setFields(Array.isArray(data) ? data : []);
+          setLoading(false);
+        }
+      })
+      .catch((err) => {
+        if (!ignore) {
+          setError(
+            err instanceof Error
+              ? err.message
+              : "Unable to load fields."
+          );
+          setLoading(false);
+        }
+      });
+
+    fetch(
+      `/api/configuration/business-objects/${businessObjectId}`,
+      {
+        method: "GET",
+        cache: "no-store",
+      }
+    )
+      .then(async (response) => {
+        if (!response.ok) return null;
+        return response.json();
+      })
+      .then((data) => {
+        if (!ignore && data) {
+          setBusinessObject(data);
+        }
+      })
+      .catch((err) => {
+        console.error("Unable to load business object:", err);
+      });
+
+    return () => {
+      ignore = true;
+    };
   }, [businessObjectId]);
+
+  // ============================================================
+  // EDIT BUSINESS OBJECT
+  // ============================================================
+
+  function openEditObject() {
+    if (!businessObject) return;
+    setEditObjectName(businessObject.name);
+    setEditObjectDescription(businessObject.description ?? "");
+    setError("");
+    setSuccess("");
+    setShowEditObject(true);
+  }
+
+  async function updateBusinessObject(event: React.FormEvent) {
+    event.preventDefault();
+    if (!businessObject) return;
+
+    const cleanName = editObjectName.trim();
+    if (!cleanName) {
+      setError("Business object name is required.");
+      return;
+    }
+
+    try {
+      setSaving(true);
+      setError("");
+      setSuccess("");
+
+      const response = await fetch(
+        `/api/configuration/business-objects/${businessObjectId}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+          body: JSON.stringify({
+            name: cleanName,
+            description: editObjectDescription.trim() || null,
+          }),
+        }
+      );
+
+      const responseText = await response.text();
+
+      if (!response.ok) {
+        throw new Error(
+          parseApiError(
+            responseText,
+            response.status,
+            "Update business object"
+          )
+        );
+      }
+
+      const updated = JSON.parse(responseText);
+      setBusinessObject(updated);
+      setShowEditObject(false);
+      setSuccess(
+        `Business object "${cleanName}" was updated successfully.`
+      );
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Unable to update business object."
+      );
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  // ============================================================
+  // PUBLISH BUSINESS OBJECT
+  // ============================================================
+
+  async function publishBusinessObject() {
+    if (!businessObject) return;
+
+    try {
+      setPublishing(true);
+      setError("");
+      setSuccess("");
+
+      const response = await fetch(
+        `/api/configuration/business-objects/${businessObjectId}/publish`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      const text = await response.text();
+
+      if (!response.ok) {
+        throw new Error(
+          parseApiError(
+            text,
+            response.status,
+            "Publish business object"
+          )
+        );
+      }
+
+      const updated = JSON.parse(text);
+      setBusinessObject(updated);
+      setShowPublishModal(false);
+      setSuccess(
+        `Business object "${updated.name}" has been published and is now PUBLISHED.`
+      );
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Unable to publish business object."
+      );
+    } finally {
+      setPublishing(false);
+    }
+  }
 
   // ============================================================
   // RESET FORM
@@ -777,7 +993,7 @@ export default function BusinessObjectPage() {
         label: cleanLabel,
 
         description:
-          description.trim(),
+          description.trim() || null,
 
         fieldType,
 
@@ -790,7 +1006,7 @@ export default function BusinessObjectPage() {
         hidden,
 
         defaultValue:
-          defaultValue.trim(),
+          defaultValue.trim() || null,
 
         minValue:
           parsedMinValue,
@@ -799,7 +1015,7 @@ export default function BusinessObjectPage() {
           parsedMaxValue,
 
         validationPattern:
-          validationPattern.trim(),
+          validationPattern.trim() || null,
 
         displayOrder:
           parsedDisplayOrder,
@@ -904,79 +1120,57 @@ export default function BusinessObjectPage() {
     ).length;
 
   return (
-    <main className="min-h-screen bg-[#f5f7fb] text-slate-900">
-
-      {/* ====================================================== */}
-      {/* HEADER */}
-      {/* ====================================================== */}
-
-      <header className="border-b border-slate-200 bg-white">
-
-        <div className="mx-auto flex max-w-[1500px] items-center justify-between px-6 py-4">
-
-          <div className="flex items-center gap-4">
-
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600 text-white shadow-sm">
-              <span className="text-lg font-bold">
-                M
-              </span>
-            </div>
-
-            <div>
-              <p className="text-xs font-bold tracking-[0.16em] text-blue-600">
-                MAX ERP
-              </p>
-
-              <p className="text-sm font-semibold text-slate-700">
-                Configuration Studio
-              </p>
-            </div>
-
-            <div className="mx-2 hidden h-7 w-px bg-slate-200 sm:block" />
-
-            <button type="button" onClick={() => router.push("/configuration/business-objects")} className="hidden text-sm text-slate-500 transition-colors hover:text-blue-600 sm:block">
+    <MaxShell name="Enterprise Admin" email="admin@maxerp.local">
+      <div className="space-y-6">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-slate-200/80 pb-4">
+          <div className="flex items-center gap-2 text-xs font-semibold text-slate-400">
+            <button
+              type="button"
+              onClick={() => router.push("/configuration/business-objects")}
+              className="transition hover:text-slate-600"
+            >
               Business Objects
-              <span className="mx-2 text-slate-300">
-                /
-              </span>
-              <span className="font-medium text-slate-800">
-                Customer
-              </span>
-              </button>
-
+            </button>
+            <span>/</span>
+            <span className="text-blue-600 font-bold">{businessObject?.name || "Business Object"}</span>
           </div>
 
           <div className="flex items-center gap-3">
-
-            <span className="hidden rounded-full border border-amber-200 bg-amber-50 px-3 py-1.5 text-xs font-semibold text-amber-700 sm:inline-flex">
-              DRAFT
+            <span
+              className={`rounded-full border px-3 py-1 text-xs font-bold ${
+                businessObject?.status === "PUBLISHED" ||
+                businessObject?.status === "ACTIVE"
+                  ? "border-emerald-200 bg-emerald-50 text-emerald-700"
+                  : "border-amber-200 bg-amber-50 text-amber-700"
+              }`}
+            >
+              {businessObject?.status || "DRAFT"}
             </span>
 
-            <span className="hidden text-xs text-slate-400 md:inline">
-              Version 1
+            <span className="text-xs text-slate-400">
+              Version {businessObject?.versionNumber ?? 1}
             </span>
 
-            <button
-              type="button"
-              className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-50"
-            >
-              Save Draft
-            </button>
-
-            <button
-              type="button"
-              className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-700"
-            >
-              Publish
-            </button>
-
+            {businessObject?.status === "DRAFT" ? (
+              <button
+                type="button"
+                onClick={() => setShowPublishModal(true)}
+                className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-700 transition"
+              >
+                Publish Object
+              </button>
+            ) : (
+              <span className="inline-flex items-center gap-1.5 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-700">
+                <svg className="h-4 w-4 text-emerald-600" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clipRule="evenodd" />
+                </svg>
+                Published &amp; Active
+              </span>
+            )}
           </div>
-
         </div>
 
-      </header>
-
-      <div className="mx-auto max-w-[1500px] px-6 py-8">
+        <div>
 
         {/* ==================================================== */}
         {/* TITLE */}
@@ -1003,7 +1197,7 @@ export default function BusinessObjectPage() {
                 <ChevronIcon />
 
                 <span className="font-medium text-slate-700">
-                  Customer
+                  {businessObject?.name || "Business Object"}
                 </span>
 
               </div>
@@ -1012,32 +1206,35 @@ export default function BusinessObjectPage() {
 
                 <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-50 text-blue-600">
 
-                  <svg
-                    viewBox="0 0 24 24"
-                    className="h-7 w-7"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.8"
-                  >
-                    <circle
-                      cx="12"
-                      cy="8"
-                      r="3.5"
-                    />
-
-                    <path d="M5 20c.7-3.7 3-5.5 7-5.5s6.3 1.8 7 5.5" />
-                  </svg>
+                  <span className="text-xl font-bold">
+                    {businessObject?.name?.charAt(0) || "B"}
+                  </span>
 
                 </div>
 
                 <div>
 
-                  <h1 className="text-3xl font-bold tracking-tight text-slate-950">
-                    Customer
-                  </h1>
+                  <div className="flex items-center gap-3">
+
+                    <h1 className="text-3xl font-bold tracking-tight text-slate-950">
+                      {businessObject?.name || "Business Object"}
+                    </h1>
+
+                    {businessObject?.status === "DRAFT" && (
+                      <button
+                        type="button"
+                        onClick={openEditObject}
+                        className="rounded-lg border border-slate-300 bg-white px-2.5 py-1 text-xs font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50 hover:text-slate-900"
+                      >
+                        Edit Object
+                      </button>
+                    )}
+
+                  </div>
 
                   <p className="mt-1 text-sm text-slate-500">
-                    Define the data structure and behavior of the Customer object.
+                    {businessObject?.description ||
+                      `Define the data structure and behavior of the ${businessObject?.name || "object"}.`}
                   </p>
 
                 </div>
@@ -1078,8 +1275,19 @@ export default function BusinessObjectPage() {
                   Status
                 </p>
 
-                <p className="mt-1 text-sm font-bold text-amber-600">
-                  Draft
+                <p
+                  className={`mt-1 text-sm font-bold ${
+                    businessObject?.status === "PUBLISHED" ||
+                    businessObject?.status === "ACTIVE"
+                      ? "text-emerald-600"
+                      : "text-amber-600"
+                  }`}
+                >
+                  {businessObject?.status === "PUBLISHED"
+                    ? "Published"
+                    : businessObject?.status === "ACTIVE"
+                    ? "Active"
+                    : "Draft"}
                 </p>
 
               </div>
@@ -1150,11 +1358,32 @@ export default function BusinessObjectPage() {
               "Workflows",
               "Permissions",
               "Audit",
+              "Records",
+              "Imports",
             ].map((tab) => (
 
               <button
                 key={tab}
                 type="button"
+                onClick={() => {
+                  if (tab === "Records") {
+                    router.push(
+                      `/configuration/business-objects/${businessObjectId}/records`
+                    );
+                  } else if (tab === "Imports") {
+                    router.push(
+                      `/configuration/business-objects/${businessObjectId}/imports`
+                    );
+                  } else if (tab === "Rules") {
+                    router.push(
+                      `/configuration/rules?businessObjectId=${businessObjectId}`
+                    );
+                  } else if (tab === "Workflows") {
+                    router.push("/configuration/workflows");
+                  } else if (tab === "Permissions") {
+                    router.push("/security");
+                  }
+                }}
                 className={`relative pb-4 text-sm font-medium ${
                   tab === "Fields"
                     ? "text-blue-600"
@@ -1193,7 +1422,7 @@ export default function BusinessObjectPage() {
               </h2>
 
               <p className="mt-1 text-sm text-slate-500">
-                Manage the fields available on Customer records.
+                Manage the fields available on {businessObject?.name ?? "business object"} records.
               </p>
 
             </div>
@@ -1227,19 +1456,28 @@ export default function BusinessObjectPage() {
                 Filter
               </button>
 
-              <button
-                type="button"
-                onClick={() => {
-                  setError("");
-                  setSuccess("");
-                  resetForm();
-                  setShowAddField(true);
-                }}
-                className="inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 text-sm font-semibold text-white shadow-sm hover:bg-blue-700"
-              >
-                <PlusIcon />
-                Add Field
-              </button>
+              {businessObject?.status === "DRAFT" ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setError("");
+                    setSuccess("");
+                    resetForm();
+                    setShowAddField(true);
+                  }}
+                  className="inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 text-sm font-semibold text-white shadow-sm hover:bg-blue-700"
+                >
+                  <PlusIcon />
+                  Add Field
+                </button>
+              ) : (
+                <span className="inline-flex h-10 items-center justify-center gap-1.5 rounded-lg border border-slate-200 bg-slate-50 px-3.5 text-xs font-medium text-slate-500">
+                  <svg className="h-3.5 w-3.5 text-slate-400" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M10 1a4.5 4.5 0 00-4.5 4.5V9H5a2 2 0 00-2 2v6a2 2 0 002 2h10a2 2 0 002-2v-6a2 2 0 00-2-2h-.5V5.5A4.5 4.5 0 0010 1zm3 8V5.5a3 3 0 10-6 0V9h6z" clipRule="evenodd" />
+                  </svg>
+                  Schema Locked
+                </span>
+              )}
 
             </div>
 
@@ -1295,7 +1533,7 @@ export default function BusinessObjectPage() {
               <p className="mx-auto mt-2 max-w-md text-sm text-slate-500">
                 {search
                   ? "Try another search term."
-                  : "Create your first field to define the Customer data model."}
+                  : `Create your first field to define the ${businessObject?.name ?? "business object"} data model.`}
               </p>
 
               {!search && (
@@ -1452,67 +1690,69 @@ export default function BusinessObjectPage() {
 
                         <td className="relative px-4 py-4 text-right">
 
-                          <button
-                            type="button"
-                            onClick={() =>
-                              setOpenActionsId(
-                                openActionsId ===
-                                  field.id
-                                  ? null
-                                  : field.id
-                              )
-                            }
-                            className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-700"
-                            aria-label={`Actions for ${field.label}`}
-                          >
-                            <MoreIcon />
-                          </button>
-
-                          {openActionsId ===
-                            field.id && (
-
-                            <div className="absolute right-4 top-14 z-30 w-48 overflow-hidden rounded-xl border border-slate-200 bg-white py-1 text-left shadow-xl">
-
+                          {businessObject?.status === "DRAFT" ? (
+                            <>
                               <button
                                 type="button"
                                 onClick={() =>
-                                  openEditField(
-                                    field
+                                  setOpenActionsId(
+                                    openActionsId ===
+                                      field.id
+                                      ? null
+                                      : field.id
                                   )
                                 }
-                                className="flex w-full items-center gap-3 px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50"
+                                className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-700"
+                                aria-label={`Actions for ${field.label}`}
                               >
-                                <EditIcon />
-                                Edit field
+                                <MoreIcon />
                               </button>
 
-          <button
-            type="button"
-            onClick={() =>
-              openDeleteField(
-                field
-              )
-            }
-            className="flex w-full items-center gap-3 px-4 py-2.5 text-sm font-medium text-red-600 hover:bg-red-50"
-          >
-            <svg
-              viewBox="0 0 24 24"
-              className="h-4 w-4"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.8"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M6 7h12M9 7V5.5A1.5 1.5 0 0 1 10.5 4h3A1.5 1.5 0 0 1 15 5.5V7m-7 0 .75 12.5A1.5 1.5 0 0 0 10.25 21h3.5a1.5 1.5 0 0 0 1.5-1.5L16 7M10 11v6m4-6v6"
-              />
-            </svg>
-            Delete field
-          </button>
+                              {openActionsId ===
+                                field.id && (
 
-                            </div>
+                                <div className="absolute right-4 top-14 z-30 w-48 overflow-hidden rounded-xl border border-slate-200 bg-white py-1 text-left shadow-xl">
 
+                                  <button
+                                    type="button"
+                                    onClick={() =>
+                                      openEditField(
+                                        field
+                                      )
+                                    }
+                                    className="flex w-full items-center gap-3 px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50"
+                                  >
+                                    <EditIcon />
+                                    Edit field
+                                  </button>
+
+                                  <button
+                                    type="button"
+                                    onClick={() =>
+                                      openDeleteField(
+                                        field
+                                      )
+                                    }
+                                    className="flex w-full items-center gap-3 px-4 py-2.5 text-sm font-medium text-red-600 hover:bg-red-50"
+                                  >
+                                    <TrashIcon />
+                                    Delete field
+                                  </button>
+
+                                </div>
+
+                              )}
+                            </>
+                          ) : (
+                            <span
+                              className="inline-flex items-center gap-1 text-xs text-slate-400"
+                              title="Fields cannot be modified on active business objects"
+                            >
+                              <svg className="h-3.5 w-3.5 text-slate-400" viewBox="0 0 20 20" fill="currentColor">
+                                <path fillRule="evenodd" d="M10 1a4.5 4.5 0 00-4.5 4.5V9H5a2 2 0 00-2 2v6a2 2 0 002 2h10a2 2 0 002-2v-6a2 2 0 00-2-2h-.5V5.5A4.5 4.5 0 0010 1zm3 8V5.5a3 3 0 10-6 0V9h6z" clipRule="evenodd" />
+                              </svg>
+                              Locked
+                            </span>
                           )}
 
                         </td>
@@ -1543,6 +1783,96 @@ export default function BusinessObjectPage() {
       </div>
 
       {/* ====================================================== */}
+      {/* EDIT BUSINESS OBJECT MODAL */}
+      {/* ====================================================== */}
+
+      {showEditObject && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/40 p-4 backdrop-blur-sm">
+          <div className="w-full max-w-xl overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-2xl">
+            <div className="flex items-center justify-between border-b border-slate-100 px-6 py-5">
+              <div>
+                <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-blue-600">
+                  Business Object Details
+                </div>
+                <h2 className="mt-1 text-xl font-bold text-slate-950">
+                  Edit Business Object
+                </h2>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowEditObject(false)}
+                disabled={saving}
+                className="flex h-9 w-9 items-center justify-center rounded-xl text-slate-400 hover:bg-slate-100 hover:text-slate-700"
+              >
+                <XIcon />
+              </button>
+            </div>
+
+            <form onSubmit={updateBusinessObject}>
+              <div className="space-y-4 px-6 py-6">
+                <div>
+                  <label className="text-xs font-semibold uppercase tracking-wider text-slate-500">
+                    Object Key (Immutable)
+                  </label>
+                  <input
+                    type="text"
+                    disabled
+                    value={businessObject?.objectKey ?? ""}
+                    className="mt-1.5 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 font-mono text-sm text-slate-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-xs font-semibold uppercase tracking-wider text-slate-700">
+                    Display Name <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={editObjectName}
+                    onChange={(e) => setEditObjectName(e.target.value)}
+                    placeholder="e.g. Customer Account"
+                    className="mt-1.5 w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-xs font-semibold uppercase tracking-wider text-slate-700">
+                    Description
+                  </label>
+                  <textarea
+                    rows={3}
+                    value={editObjectDescription}
+                    onChange={(e) => setEditObjectDescription(e.target.value)}
+                    placeholder="Describe this business entity..."
+                    className="mt-1.5 w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+                  />
+                </div>
+              </div>
+
+              <div className="flex items-center justify-end gap-3 border-t border-slate-100 bg-slate-50/70 px-6 py-4">
+                <button
+                  type="button"
+                  onClick={() => setShowEditObject(false)}
+                  disabled={saving}
+                  className="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={saving}
+                  className="rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-blue-700 disabled:opacity-50"
+                >
+                  {saving ? "Saving..." : "Save Changes"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ====================================================== */}
       {/* ADD FIELD MODAL */}
       {/* ====================================================== */}
 
@@ -1561,7 +1891,7 @@ export default function BusinessObjectPage() {
                 </h2>
 
                 <p className="mt-1 text-sm text-slate-500">
-                  Define a new field for the Customer object.
+                  Define a new field for the {businessObject?.name || "object"}.
                 </p>
 
               </div>
@@ -2254,10 +2584,25 @@ export default function BusinessObjectPage() {
                   maxValue={maxValue}
                   validationPattern={validationPattern}
                   setDefaultValue={setDefaultValue}
+
                   setMinValue={setMinValue}
                   setMaxValue={setMaxValue}
                   setValidationPattern={setValidationPattern}
                 />
+
+
+                <ChoiceFieldOptions
+                  businessObjectId={businessObjectId}
+                  fieldId={editingField?.id}
+                  fieldType={fieldType}
+                />
+
+                <ReferenceFieldSettings
+                  businessObjectId={businessObjectId}
+                  fieldId={editingField?.id}
+                  fieldType={fieldType}
+                />
+
 
 
                     <label className="mb-2 block text-sm font-semibold text-slate-700">
@@ -2529,6 +2874,127 @@ export default function BusinessObjectPage() {
       )}
 
 
-    </main>
+      {showPublishModal && (
+        <div
+          className="fixed inset-0 z-[60] flex items-center justify-center bg-slate-950/40 p-4 backdrop-blur-sm"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="publish-object-title"
+        >
+          <div className="w-full max-w-lg overflow-hidden rounded-2xl bg-white shadow-2xl">
+            <div className="px-6 py-6">
+              <div className="flex items-start gap-4">
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-blue-50 text-blue-600">
+                  <svg
+                    viewBox="0 0 24 24"
+                    className="h-6 w-6"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+                    />
+                  </svg>
+                </div>
+
+                <div className="min-w-0 flex-1">
+                  <h2
+                    id="publish-object-title"
+                    className="text-lg font-bold text-slate-900"
+                  >
+                    Publish Business Object?
+                  </h2>
+
+                  <p className="mt-1 text-sm leading-6 text-slate-500">
+                    Publishing makes this business object live and activates it for record creation and data imports.
+                  </p>
+                </div>
+              </div>
+
+              <div className="mt-5 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3">
+                <div className="flex items-center justify-between text-sm">
+                  <span className="font-medium text-slate-500">Business Object</span>
+                  <span className="font-semibold text-slate-900">{businessObject?.name}</span>
+                </div>
+                <div className="mt-2 flex items-center justify-between text-sm">
+                  <span className="font-medium text-slate-500">Configured Fields</span>
+                  <span className="font-semibold text-slate-900">{fields.length}</span>
+                </div>
+                <div className="mt-2 flex items-center justify-between text-sm">
+                  <span className="font-medium text-slate-500">Target Status</span>
+                  <span className="inline-flex items-center rounded-md bg-emerald-50 px-2 py-0.5 text-xs font-semibold text-emerald-700 border border-emerald-200">
+                    PUBLISHED
+                  </span>
+                </div>
+              </div>
+
+              <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3">
+                <div className="flex gap-2.5">
+                  <svg className="h-5 w-5 shrink-0 text-amber-600" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 5zm0 9a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
+                  </svg>
+                  <p className="text-xs leading-5 text-amber-800">
+                    <strong>Important:</strong> Once published, the field configuration and schema cannot be modified to protect data integrity for existing business records.
+                  </p>
+                </div>
+              </div>
+
+              {fields.length === 0 && (
+                <div className="mt-3 rounded-xl border border-red-200 bg-red-50 px-4 py-2.5 text-xs text-red-700">
+                  A business object must have at least one field before it can be published.
+                </div>
+              )}
+            </div>
+
+            <div className="flex items-center justify-end gap-3 border-t border-slate-200 bg-slate-50 px-6 py-4">
+              <button
+                type="button"
+                onClick={() => setShowPublishModal(false)}
+                disabled={publishing}
+                className="rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                Cancel
+              </button>
+
+              <button
+                type="button"
+                onClick={publishBusinessObject}
+                disabled={publishing || fields.length === 0}
+                className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {publishing && (
+                  <svg
+                    className="h-4 w-4 animate-spin"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                  >
+                    <circle
+                      cx="12"
+                      cy="12"
+                      r="9"
+                      stroke="currentColor"
+                      strokeWidth="3"
+                      className="opacity-25"
+                    />
+                    <path
+                      d="M21 12a9 9 0 0 0-9-9"
+                      stroke="currentColor"
+                      strokeWidth="3"
+                      strokeLinecap="round"
+                    />
+                  </svg>
+                )}
+                {publishing ? "Publishing..." : "Confirm & Publish"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      </div>
+    </MaxShell>
   );
 }

@@ -1,4 +1,7 @@
 @import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *, [data-theme="dark"], [data-theme="dark"] *, [data-max-theme="obsidian"], [data-max-theme="obsidian"] *, [data-max-theme="midnight"], [data-max-theme="midnight"] *, [data-max-theme="emerald"], [data-max-theme="emerald"] *, [data-max-theme="amethyst"], [data-max-theme="amethyst"] *));
+
 @import "./max-theme.css";
 
 /* =========================================================
@@ -6,29 +9,29 @@
    ========================================================= */
 
 :root {
-  --background: #f4f7fb;
-  --foreground: #172033;
+  --background: #f5f7fb;
+  --foreground: #0b132b;
 
   --surface: #ffffff;
   --surface-soft: #f8fafc;
-  --surface-muted: #eef3f8;
+  --surface-muted: #eef2f6;
 
   --border: #e2e8f0;
   --border-strong: #cbd5e1;
 
-  --text-primary: #172033;
-  --text-secondary: #475569;
+  --text-primary: #0b132b;
+  --text-secondary: #334155;
   --text-muted: #64748b;
   --text-faint: #94a3b8;
 
-  --primary: #2563eb;
-  --primary-hover: #1d4ed8;
+  --primary: #1d4ed8;
+  --primary-hover: #1e40af;
   --primary-soft: #eff6ff;
 
-  --header: #ffffff;
+  --header: rgba(255, 255, 255, 0.92);
   --card: #ffffff;
 
-  --glow: rgba(37, 99, 235, 0.12);
+  --glow: rgba(30, 64, 175, 0.14);
 }
 
 /* =========================================================
@@ -44,123 +47,193 @@
 }
 
 /* =========================================================
-   LIGHT THEME
+   LIGHT THEME (IMPERIAL PLATINUM)
    ========================================================= */
 
-html[data-max-theme="light"] {
-  --background: #f4f7fb;
-  --foreground: #172033;
+html[data-max-theme="light"],
+html[data-max-theme="platinum"],
+html.max-theme-platinum {
+  --background: #f5f7fb;
+  --foreground: #0b132b;
 
   --surface: #ffffff;
   --surface-soft: #f8fafc;
-  --surface-muted: #eef3f8;
+  --surface-muted: #eef2f6;
 
   --border: #e2e8f0;
   --border-strong: #cbd5e1;
 
-  --text-primary: #172033;
-  --text-secondary: #475569;
+  --text-primary: #0b132b;
+  --text-secondary: #334155;
   --text-muted: #64748b;
   --text-faint: #94a3b8;
 
-  --primary: #2563eb;
-  --primary-hover: #1d4ed8;
+  --primary: #1d4ed8;
+  --primary-hover: #1e40af;
   --primary-soft: #eff6ff;
 
-  --header: rgba(255, 255, 255, 0.96);
+  --header: rgba(255, 255, 255, 0.92);
   --card: #ffffff;
 
-  --glow: rgba(37, 99, 235, 0.10);
+  --glow: rgba(30, 64, 175, 0.14);
 }
 
 /* =========================================================
-   DARK THEME
+   DARK THEME (IMPERIAL OBSIDIAN)
    ========================================================= */
 
-html[data-max-theme="dark"] {
-  --background: #0a0f18;
-  --foreground: #e8eef7;
+html[data-max-theme="dark"],
+html[data-max-theme="obsidian"],
+html.max-theme-obsidian {
+  --background: #0c0d10;
+  --foreground: #ffffff;
 
-  --surface: #111925;
-  --surface-soft: #151f2d;
-  --surface-muted: #1b2736;
+  --surface: #141519;
+  --surface-soft: #1a1b20;
+  --surface-muted: #22232a;
 
-  --border: #263548;
-  --border-strong: #3a4c61;
+  --border: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.16);
 
-  --text-primary: #f8fafc;
-  --text-secondary: #c5d0dd;
-  --text-muted: #91a0b1;
-  --text-faint: #607184;
+  --text-primary: #ffffff;
+  --text-secondary: #9ca3af;
+  --text-muted: #6b7280;
+  --text-faint: #4b5563;
 
-  --primary: #5b9cff;
-  --primary-hover: #7eb1ff;
-  --primary-soft: #172d50;
+  --primary: #ffffff;
+  --primary-hover: #e5e7eb;
+  --primary-soft: rgba(255, 255, 255, 0.10);
 
-  --header: rgba(13, 19, 29, 0.96);
-  --card: #111925;
+  --header: rgba(12, 13, 16, 0.94);
+  --card: #141519;
 
-  --glow: rgba(59, 130, 246, 0.16);
+  --glow: rgba(255, 255, 255, 0.05);
 }
 
 /* =========================================================
-   SKY THEME
+   SKY THEME (NORDIC ARCTIC)
    ========================================================= */
 
-html[data-max-theme="sky"] {
-  --background: #eaf7ff;
-  --foreground: #14324a;
+html[data-max-theme="sky"],
+html[data-max-theme="arctic"],
+html.max-theme-arctic {
+  --background: #eef5fb;
+  --foreground: #0c2340;
 
-  --surface: rgba(255, 255, 255, 0.94);
-  --surface-soft: #f5fbff;
-  --surface-muted: #dff2fc;
+  --surface: rgba(255, 255, 255, 0.90);
+  --surface-soft: rgba(255, 255, 255, 0.70);
+  --surface-muted: #e2eef7;
 
-  --border: #c2e5f6;
-  --border-strong: #91cfea;
+  --border: rgba(126, 181, 201, 0.40);
+  --border-strong: #0284c7;
 
-  --text-primary: #14324a;
-  --text-secondary: #315a73;
-  --text-muted: #5b7b91;
-  --text-faint: #88a5b6;
+  --text-primary: #0c2340;
+  --text-secondary: #335c80;
+  --text-muted: #688fae;
+  --text-faint: #94b8d4;
 
-  --primary: #087fbd;
-  --primary-hover: #056a9f;
-  --primary-soft: #dff3ff;
+  --primary: #0284c7;
+  --primary-hover: #0369a1;
+  --primary-soft: rgba(2, 132, 199, 0.10);
 
-  --header: rgba(255, 255, 255, 0.88);
-  --card: rgba(255, 255, 255, 0.94);
+  --header: rgba(248, 253, 255, 0.82);
+  --card: rgba(255, 255, 255, 0.90);
 
-  --glow: rgba(14, 165, 233, 0.14);
+  --glow: rgba(6, 182, 212, 0.20);
 }
 
 /* =========================================================
-   AEROSPACE THEME
+   AEROSPACE THEME (COMMAND MIDNIGHT)
    ========================================================= */
 
-html[data-max-theme="aerospace"] {
-  --background: #050b12;
-  --foreground: #e8f4ff;
+html[data-max-theme="aerospace"],
+html[data-max-theme="midnight"],
+html.max-theme-midnight {
+  --background: #030712;
+  --foreground: #f0f9ff;
 
-  --surface: #0c1621;
-  --surface-soft: #101d2a;
-  --surface-muted: #162738;
+  --surface: #071326;
+  --surface-soft: #0c1f3b;
+  --surface-muted: #122b50;
 
-  --border: #263d52;
-  --border-strong: #3d5870;
+  --border: rgba(56, 189, 248, 0.22);
+  --border-strong: #0ea5e9;
 
-  --text-primary: #f4faff;
-  --text-secondary: #c5d9e9;
-  --text-muted: #8ca7bb;
-  --text-faint: #5c7589;
+  --text-primary: #f0f9ff;
+  --text-secondary: #93c5fd;
+  --text-muted: #60a5fa;
+  --text-faint: #38bdf8;
 
-  --primary: #35d7ff;
-  --primary-hover: #76e7ff;
-  --primary-soft: #073747;
+  --primary: #0ea5e9;
+  --primary-hover: #38bdf8;
+  --primary-soft: rgba(14, 165, 233, 0.15);
 
-  --header: #07111b;
-  --card: #0c1621;
+  --header: rgba(4, 11, 23, 0.90);
+  --card: #071326;
 
-  --glow: rgba(34, 211, 238, 0.16);
+  --glow: rgba(14, 165, 233, 0.25);
+}
+
+/* =========================================================
+   EMERALD THEME (EMERALD SOVEREIGN)
+   ========================================================= */
+
+html[data-max-theme="emerald"],
+html.max-theme-emerald {
+  --background: #050e09;
+  --foreground: #ecfdf5;
+
+  --surface: #091811;
+  --surface-soft: #0e2319;
+  --surface-muted: #143023;
+
+  --border: rgba(16, 185, 129, 0.20);
+  --border-strong: #10b981;
+
+  --text-primary: #ecfdf5;
+  --text-secondary: #a7f3d0;
+  --text-muted: #6ee7b7;
+  --text-faint: #34d399;
+
+  --primary: #10b981;
+  --primary-hover: #059669;
+  --primary-soft: rgba(16, 185, 129, 0.15);
+
+  --header: rgba(5, 14, 9, 0.92);
+  --card: #091811;
+
+  --glow: rgba(16, 185, 129, 0.25);
+}
+
+/* =========================================================
+   AMETHYST THEME (ROYAL AMETHYST)
+   ========================================================= */
+
+html[data-max-theme="amethyst"],
+html.max-theme-amethyst {
+  --background: #0a0612;
+  --foreground: #faf5ff;
+
+  --surface: #130c22;
+  --surface-soft: #1c1231;
+  --surface-muted: #261842;
+
+  --border: rgba(168, 85, 247, 0.22);
+  --border-strong: #a855f7;
+
+  --text-primary: #faf5ff;
+  --text-secondary: #e9d5ff;
+  --text-muted: #c084fc;
+  --text-faint: #a855f7;
+
+  --primary: #a855f7;
+  --primary-hover: #9333ea;
+  --primary-soft: rgba(168, 85, 247, 0.15);
+
+  --header: rgba(10, 6, 18, 0.92);
+  --card: #130c22;
+
+  --glow: rgba(168, 85, 247, 0.25);
 }
 
 /* =========================================================
@@ -194,7 +267,9 @@ body {
    LIGHT BACKGROUND
    ========================================================= */
 
-html[data-max-theme="light"] body {
+html[data-max-theme="light"] body,
+html[data-max-theme="platinum"] body,
+html.max-theme-platinum body {
   background:
     radial-gradient(
       circle at 80% 0%,
@@ -205,10 +280,12 @@ html[data-max-theme="light"] body {
 }
 
 /* =========================================================
-   SKY BACKGROUND
+   SKY / ARCTIC BACKGROUND
    ========================================================= */
 
-html[data-max-theme="sky"] body {
+html[data-max-theme="sky"] body,
+html[data-max-theme="arctic"] body,
+html.max-theme-arctic body {
   background:
     radial-gradient(
       circle at 5% 0%,
@@ -229,14 +306,16 @@ html[data-max-theme="sky"] body {
 }
 
 /* =========================================================
-   DARK BACKGROUND
+   DARK / OBSIDIAN BACKGROUND
    ========================================================= */
 
-html[data-max-theme="dark"] body {
+html[data-max-theme="dark"] body,
+html[data-max-theme="obsidian"] body,
+html.max-theme-obsidian body {
   background:
     radial-gradient(
       circle at 85% 0%,
-      rgba(37, 99, 235, 0.12),
+      rgba(139, 92, 246, 0.14),
       transparent 30%
     ),
     radial-gradient(
@@ -244,14 +323,16 @@ html[data-max-theme="dark"] body {
       rgba(59, 130, 246, 0.05),
       transparent 30%
     ),
-    #0a0f18;
+    #08090c;
 }
 
 /* =========================================================
-   AEROSPACE BACKGROUND
+   AEROSPACE / MIDNIGHT BACKGROUND
    ========================================================= */
 
-html[data-max-theme="aerospace"] body {
+html[data-max-theme="aerospace"] body,
+html[data-max-theme="midnight"] body,
+html.max-theme-midnight body {
   background:
     radial-gradient(
       circle at 20% 0%,
@@ -265,7 +346,7 @@ html[data-max-theme="aerospace"] body {
     ),
     linear-gradient(
       135deg,
-      #050b12 0%,
+      #050d18 0%,
       #07121d 45%,
       #040910 100%
     );
@@ -307,38 +388,7 @@ html[data-max-theme="aerospace"] body {
    HEADER
    ========================================================= */
 
-html[data-max-theme="dark"] header,
-html[data-max-theme="aerospace"] header {
-  background-color: var(--header) !important;
-  border-color: var(--border) !important;
-}
-
-html[data-max-theme="sky"] header {
-  background-color: var(--header) !important;
-  border-color: var(--border) !important;
-  backdrop-filter: blur(18px);
-}
-
-/* Header text */
-
-html[data-max-theme="dark"] header .text-slate-950,
-html[data-max-theme="dark"] header .text-slate-900,
-html[data-max-theme="dark"] header .text-slate-800,
-html[data-max-theme="aerospace"] header .text-slate-950,
-html[data-max-theme="aerospace"] header .text-slate-900,
-html[data-max-theme="aerospace"] header .text-slate-800 {
-  color: var(--text-primary) !important;
-}
-
-html[data-max-theme="dark"] header .text-slate-600,
-html[data-max-theme="aerospace"] header .text-slate-600 {
-  color: var(--text-secondary) !important;
-}
-
-html[data-max-theme="dark"] header .text-slate-400,
-html[data-max-theme="aerospace"] header .text-slate-400 {
-  color: var(--text-muted) !important;
-}
+/* Header styling is managed via component tokens matching Recruiting UI */
 
 /* =========================================================
    MAIN WHITE SURFACES

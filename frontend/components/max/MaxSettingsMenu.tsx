@@ -94,6 +94,44 @@ function SparkleIcon() {
   );
 }
 
+function EmeraldIcon() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none">
+      <path
+        d="M6 3h12l4 6-10 12L2 9l4-6Z"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M2 9h20M12 21 8.5 9 10 3M12 21l3.5-12L14 3"
+        stroke="currentColor"
+        strokeWidth="1.2"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function AmethystIcon() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none">
+      <path
+        d="M12 2 3 7v10l9 5 9-5V7l-9-5Z"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M12 22V12M12 12 3 7M12 12l9-5M7.5 4.5l9 5M4.5 14.5l7.5 4.5 7.5-4.5"
+        stroke="currentColor"
+        strokeWidth="1.2"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 function ChevronDown() {
   return (
     <svg
@@ -257,28 +295,40 @@ type ThemeOption = {
 
 const themes: ThemeOption[] = [
   {
-    id: "platinum",
-    name: "Platinum",
-    description: "Premium enterprise",
-    icon: <SunIcon />,
-  },
-  {
     id: "obsidian",
-    name: "Obsidian",
-    description: "Professional dark",
+    name: "Imperial Obsidian",
+    description: "Royal Dark • Velvet Onyx & Slate",
     icon: <MoonIcon />,
   },
   {
-    id: "arctic",
-    name: "Arctic",
-    description: "Clean modern",
-    icon: <SnowIcon />,
+    id: "platinum",
+    name: "Imperial Platinum",
+    description: "Royal Light • Alabaster & Sapphire",
+    icon: <SunIcon />,
   },
   {
     id: "midnight",
-    name: "Midnight",
-    description: "Executive navy",
+    name: "Command Midnight",
+    description: "Royal Navy • Deep Space Azure",
     icon: <SparkleIcon />,
+  },
+  {
+    id: "emerald",
+    name: "Emerald Sovereign",
+    description: "Royal Malachite • Swiss Wealth & Gold",
+    icon: <EmeraldIcon />,
+  },
+  {
+    id: "amethyst",
+    name: "Royal Amethyst",
+    description: "Imperial Velvet • Violet & Rose Gold",
+    icon: <AmethystIcon />,
+  },
+  {
+    id: "arctic",
+    name: "Nordic Arctic",
+    description: "Royal Glacier • Opal & Frost Azure",
+    icon: <SnowIcon />,
   },
 ];
 
@@ -300,12 +350,12 @@ export default function MaxSettingsMenu() {
         type="button"
         onClick={() => setOpen((value) => !value)}
         className={`
-          flex h-11 items-center gap-2 rounded-xl border px-4
-          text-[11px] font-bold transition
+          flex h-9 items-center gap-1.5 rounded-xl border px-2.5 sm:px-3
+          text-xs font-semibold transition shadow-2xs cursor-pointer
           ${
             open
-              ? "border-[var(--max-primary)] bg-[var(--max-primary-soft)] text-[var(--max-primary)]"
-              : "border-[var(--max-border)] bg-[var(--max-surface)] text-[var(--max-text)] hover:bg-[var(--max-surface-2)]"
+              ? "border-blue-500 bg-blue-50/80 text-blue-700"
+              : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50 hover:text-slate-900"
           }
         `}
       >
@@ -319,35 +369,35 @@ export default function MaxSettingsMenu() {
       </button>
 
       {open && (
-        <div className="absolute right-0 top-full z-[300] mt-3 w-[360px] overflow-hidden rounded-2xl border border-[var(--max-border)] bg-[var(--max-surface)] shadow-[var(--max-shadow-lg)]">
+        <div className="absolute right-0 top-full z-[300] mt-2 w-[380px] overflow-hidden rounded-2xl border border-slate-200 bg-white text-slate-900 shadow-2xl">
 
           {/* HEADER */}
 
-          <div className="border-b border-[var(--max-border-soft)] px-5 py-4">
-            <div className="text-sm font-bold text-[var(--max-text)]">
+          <div className="border-b border-slate-100 bg-slate-50 px-5 py-3.5">
+            <div className="text-sm font-bold text-slate-900">
               Settings
             </div>
 
-            <div className="mt-1 text-[10px] text-[var(--max-text-muted)]">
-              Workspace preferences and system controls
+            <div className="mt-0.5 text-[10px] text-slate-500">
+              Workspace preferences & appearance
             </div>
           </div>
 
           {/* APPEARANCE */}
 
-          <div className="border-b border-[var(--max-border-soft)] px-5 py-4">
+          <div className="border-b border-slate-100 px-5 py-3.5">
 
             <div className="mb-3">
-              <div className="text-[9px] font-bold uppercase tracking-[0.18em] text-[var(--max-text-muted)]">
-                Appearance
+              <div className="text-[9px] font-mono font-bold uppercase tracking-[0.18em] text-slate-500">
+                Appearance (6 Themes)
               </div>
 
-              <div className="mt-1 text-xs font-semibold text-[var(--max-text)]">
+              <div className="mt-0.5 text-xs font-semibold text-slate-900">
                 Choose your workspace theme
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-2.5">
+            <div className="grid grid-cols-2 gap-2">
 
               {themes.map((item) => {
                 const active = theme === item.id;
@@ -358,54 +408,76 @@ export default function MaxSettingsMenu() {
                     type="button"
                     onClick={() => selectTheme(item.id)}
                     className={`
-                      group relative overflow-hidden rounded-xl border p-2.5
-                      text-left transition
+                      group relative overflow-hidden rounded-xl border p-2
+                      text-left transition cursor-pointer
                       ${
                         active
-                          ? "border-[var(--max-primary)] bg-[var(--max-primary-soft)] ring-1 ring-[var(--max-primary)]"
-                          : "border-[var(--max-border)] bg-[var(--max-surface-2)] hover:border-[var(--max-primary)]"
+                          ? "border-blue-500 bg-blue-50/60 ring-1 ring-blue-500 shadow-2xs"
+                          : "border-slate-200 bg-slate-50/70 hover:border-slate-300 hover:bg-slate-100/70"
                       }
                     `}
                   >
 
-                    {/* VISUAL PREVIEW */}
+                    {/* REALISTIC MINI WINDOW PREVIEW */}
 
                     <div
                       className={`
-                        relative h-[62px] overflow-hidden rounded-lg border
+                        relative h-[56px] overflow-hidden rounded-lg border
                         ${
                           item.id === "platinum"
-                            ? "border-slate-200 bg-white"
+                            ? "border-slate-300 bg-[#f8fafc]"
                             : item.id === "obsidian"
-                              ? "border-slate-700 bg-[#080c14]"
-                              : item.id === "arctic"
-                                ? "border-cyan-200 bg-[#f2fbff]"
-                                : "border-blue-900 bg-[#0a1630]"
+                              ? "border-zinc-800 bg-[#0c0d10]"
+                              : item.id === "midnight"
+                                ? "border-blue-950 bg-[#030712]"
+                                : item.id === "emerald"
+                                  ? "border-emerald-950 bg-[#050e09]"
+                                  : item.id === "amethyst"
+                                    ? "border-purple-950 bg-[#090611]"
+                                    : "border-sky-200 bg-[#eef5fb]"
                         }
                       `}
                     >
 
-                      <div className="absolute left-2 top-2 h-1.5 w-10 rounded-full bg-slate-300" />
+                      {/* Top bar preview */}
+                      <div className="absolute top-0 left-0 right-0 h-3 border-b border-white/5 flex items-center px-1.5 gap-0.5">
+                        <span className="h-1 w-1 rounded-full bg-[#ff5f56]" />
+                        <span className="h-1 w-1 rounded-full bg-[#ffbd2e]" />
+                        <span className="h-1 w-1 rounded-full bg-[#27c93f]" />
+                      </div>
 
-                      <div
-                        className={`
-                          absolute left-2 top-6 h-1.5 w-7 rounded-full
-                          ${
-                            item.id === "arctic"
-                              ? "bg-cyan-400"
-                              : "bg-blue-500"
-                          }
-                        `}
-                      />
+                      {/* Left rail & main card blocks */}
+                      <div className="absolute top-3 left-0 bottom-0 w-3 border-r border-white/5 flex flex-col items-center pt-1 gap-1">
+                        <span className="h-1 w-1.5 rounded-xs bg-white/20" />
+                        <span className="h-1 w-1.5 rounded-xs bg-white/20" />
+                      </div>
 
-                      <div className="absolute bottom-2 left-2 right-2 grid grid-cols-3 gap-1.5">
-                        <span className="h-6 rounded border border-current opacity-20" />
-                        <span className="h-6 rounded border border-current opacity-20" />
-                        <span className="h-6 rounded border border-current opacity-20" />
+                      <div className="absolute top-4 left-4 right-1.5 bottom-1 flex gap-1">
+                        <div className="flex-1 rounded border border-white/5 bg-white/5 p-1 flex flex-col justify-end">
+                          <span
+                            className={`h-2 rounded-xs ${
+                              item.id === "emerald"
+                                ? "bg-emerald-500"
+                                : item.id === "amethyst"
+                                  ? "bg-purple-500"
+                                  : item.id === "arctic"
+                                    ? "bg-cyan-400"
+                                    : item.id === "obsidian"
+                                      ? "bg-sky-400"
+                                      : item.id === "midnight"
+                                        ? "bg-sky-500"
+                                        : "bg-blue-600"
+                            }`}
+                          />
+                        </div>
+
+                        <div className="flex-1 rounded border border-white/5 bg-white/5 p-1 flex items-center justify-center">
+                          <span className="h-3 w-3 rounded-full border border-white/20" />
+                        </div>
                       </div>
 
                       {active && (
-                        <span className="absolute right-2 top-2 flex h-5 w-5 items-center justify-center rounded-full bg-[var(--max-primary)] text-white">
+                        <span className="absolute right-1 top-1 flex h-4 w-4 items-center justify-center rounded-full bg-white text-black font-bold text-[9px] shadow-sm">
                           ✓
                         </span>
                       )}
@@ -415,11 +487,11 @@ export default function MaxSettingsMenu() {
 
                       <span
                         className={`
-                          flex h-7 w-7 items-center justify-center rounded-lg
+                          flex h-6 w-6 items-center justify-center rounded-lg text-xs
                           ${
                             active
-                              ? "bg-[var(--max-primary)] text-white"
-                              : "bg-[var(--max-surface)] text-[var(--max-text-secondary)]"
+                              ? "bg-blue-600 text-white font-bold"
+                              : "bg-slate-200/80 text-slate-700"
                           }
                         `}
                       >
@@ -427,11 +499,11 @@ export default function MaxSettingsMenu() {
                       </span>
 
                       <span className="min-w-0">
-                        <span className="block text-[11px] font-bold text-[var(--max-text)]">
+                        <span className="block truncate text-[11px] font-bold text-slate-900">
                           {item.name}
                         </span>
 
-                        <span className="block truncate text-[8px] text-[var(--max-text-muted)]">
+                        <span className="block truncate text-[8px] text-slate-500">
                           {item.description}
                         </span>
                       </span>
@@ -443,30 +515,30 @@ export default function MaxSettingsMenu() {
 
             </div>
 
-            {/* ACTIVE THEME */}
+            {/* ACTIVE THEME ROW */}
 
-            <div className="mt-3 flex items-center justify-between rounded-xl border border-[var(--max-border-soft)] bg-[var(--max-surface-2)] px-3 py-2.5">
+            <div className="mt-3 flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50 px-3 py-2">
 
               <div className="flex items-center gap-2">
 
-                <span className="text-[var(--max-primary)]">
-                  <SunIcon />
+                <span className="text-blue-600">
+                  {themes.find((item) => item.id === theme)?.icon ?? <SunIcon />}
                 </span>
 
                 <div>
-                  <div className="text-[8px] font-bold uppercase tracking-wider text-[var(--max-text-muted)]">
+                  <div className="text-[8px] font-mono font-bold uppercase tracking-wider text-slate-500">
                     Active theme
                   </div>
 
-                  <div className="text-[10px] font-bold text-[var(--max-text)]">
+                  <div className="text-[10px] font-bold text-slate-900">
                     {themes.find((item) => item.id === theme)?.name}
                   </div>
                 </div>
 
               </div>
 
-              <span className="rounded-full bg-emerald-500/10 px-2.5 py-1 text-[8px] font-bold text-emerald-600">
-                Applied
+              <span className="rounded-full bg-blue-50 border border-blue-200 px-2 py-0.5 text-[8px] font-mono font-bold text-blue-700">
+                ACTIVE
               </span>
 
             </div>

@@ -1,0 +1,519 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { useParams, useRouter } from "next/navigation";
+
+type BusinessObject = {
+  id: string;
+  objectKey: string;
+  name: string;
+  description?: string | null;
+  status: string;
+};
+
+type RecordItem = {
+  id: string;
+  businessObjectId: string;
+  recordData: Record<string, unknown>;
+  createdAt: string;
+  updatedAt: string;
+};
+
+type Field = {
+  id: string;
+  fieldKey: string;
+  label: string;
+  fieldType: string;
+  required: boolean;
+  readOnly: boolean;
+  hidden: boolean;
+  displayOrder: number;
+};
+
+type FieldOption = {
+  id: string;
+  optionValue: string;
+  optionLabel: string;
+  displayOrder: number;
+  active: boolean;
+  defaultOption: boolean;
+};
+
+type UserOption = {
+  id: string;
+  username: string;
+  email?: string | null;
+  status?: string | null;
+};
+
+type ReferenceConfiguration = {
+  id: string;
+  fieldId: string;
+  targetBusinessObjectId: string;
+  displayFieldId?: string | null;
+  allowMultiple: boolean;
+  allowCreate: boolean;
+};
+
+type TargetRecord = {
+  id: string;
+  recordData: Record<string, unknown>;
+};
+
+export default function BusinessObjectRecordsPage() {
+  const params = useParams();
+  const router = useRouter();
+
+  const businessObjectId = params.businessObjectId as string;
+
+  const [businessObject, setBusinessObject] =
+    useState<BusinessObject | null>(null);
+
+  const [records, setRecords] = useState<RecordItem[]>([]);
+  const [fields, setFields] = useState<Field[]>([]);
+  const [options, setOptions] =
+    useState<Record<string, FieldOption[]>>({});
+  const [users, setUsers] = useState<UserOption[]>([]);
+  const [references, setReferences] =
+    useState<Record<string, ReferenceConfiguration>>({});
+  const [referenceRecords, setReferenceRecords] =
+    useState<Record<string, TargetRecord[]>>({});
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    if (!businessObjectId) return;
+
+    async function loadData() {
+      try {
+        setLoading(true);
+        setError("");
+
+        const [objectResponse, fieldsResponse, recordsResponse, usersResponse] =
+          await Promise.all([
+            fetch("/api/configuration/business-objects", {
+              cache: "no-store",
+            }),
+            fetch(
+              `/api/configuration/business-objects/${businessObjectId}/fields`,
+              {
+                cache: "no-store",
+              }
+            ),
+            fetch(
+              `/api/configuration/business-objects/${businessObjectId}/records`,
+              {
+                cache: "no-store",
+              }
+            ),
+            fetch("/api/users", {
+              cache: "no-store",
+            }),
+          ]);
+
+        if (!objectResponse.ok) {
+          throw new Error("Unable to load business object.");
+        }
+
+        if (!fieldsResponse.ok) {
+          throw new Error("Unable to load fields.");
+        }
+
+        if (!recordsResponse.ok) {
+          throw new Error("Unable to load records.");
+        }
+
+        if (!usersResponse.ok) {
+          throw new Error("Unable to load users.");
+        }
+
+        const objects = await objectResponse.json();
+        const loadedFields: Field[] = await fieldsResponse.json();
+        const recordData = await recordsResponse.json();
+        const loadedUsers: UserOption[] = await usersResponse.json();
+
+        setFields(
+          Array.isArray(loadedFields)
+            ? loadedFields
+                .filter((field) => !field.hidden)
+                .sort(
+                  (a, b) =>
+                    a.displayOrder - b.displayOrder
+                )
+            : []
+        );
+
+        setUsers(
+          Array.isArray(loadedUsers)
+            ? loadedUsers
+            : []
+        );
+
+        const choiceFields = Array.isArray(loadedFields)
+          ? loadedFields.filter(
+              (field) =>
+                field.fieldType === "CHOICE" ||
+                field.fieldType === "MULTI_CHOICE"
+            )
+          : [];
+
+        const loadedOptions: Record<string, FieldOption[]> = {};
+
+        await Promise.all(
+          choiceFields.map(async (field) => {
+            const response = await fetch(
+              `/api/configuration/business-objects/${businessObjectId}/fields/${field.id}/options`,
+              { cache: "no-store" }
+            );
+
+            if (response.ok) {
+              const data = await response.json();
+
+              loadedOptions[field.fieldKey] =
+                Array.isArray(data) ? data : [];
+            }
+          })
+        );
+
+        setOptions(loadedOptions);
+
+        const foundObject = Array.isArray(objects)
+          ? objects.find(
+              (item: BusinessObject) => item.id === businessObjectId
+            )
+          : null;
+
+        setBusinessObject(foundObject ?? null);
+        setRecords(Array.isArray(recordData) ? recordData : []);
+      } catch (err) {
+        console.error(err);
+
+        setError(
+          err instanceof Error
+            ? err.message
+            : "Unable to load records."
+        );
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadData();
+  }, [businessObjectId]);
+
+  const getFieldLabel = (fieldKey: string) => {
+    const field = fields.find(
+      (item) => item.fieldKey === fieldKey
+    );
+
+    return field?.label || fieldKey;
+  };
+
+  const formatUserValue = (value: unknown) => {
+    if (value === null || value === undefined || value === "") {
+      return "—";
+    }
+
+    const user = users.find(
+      (item) => item.id === String(value)
+    );
+
+    if (!user) {
+      return String(value);
+    }
+
+    return user.email
+      ? `${user.username} — ${user.email}`
+      : user.username;
+  };
+
+  const formatChoiceValue = (
+    fieldKey: string,
+    value: unknown
+  ) => {
+    if (value === null || value === undefined || value === "") {
+      return "—";
+    }
+
+    const fieldOptions = options[fieldKey] || [];
+
+    if (Array.isArray(value)) {
+      return value
+        .map((item) => {
+          const option = fieldOptions.find(
+            (entry) =>
+              entry.optionValue === String(item)
+          );
+
+          return option?.optionLabel || String(item);
+        })
+        .join(", ");
+    }
+
+    const option = fieldOptions.find(
+      (entry) =>
+        entry.optionValue === String(value)
+    );
+
+    return option?.optionLabel || String(value);
+  };
+
+  const formatFieldValue = (
+    fieldKey: string,
+    value: unknown
+  ) => {
+    const field = fields.find(
+      (item) => item.fieldKey === fieldKey
+    );
+
+    if (!field) {
+      if (
+        value === null ||
+        value === undefined ||
+        value === ""
+      ) {
+        return "—";
+      }
+
+      return typeof value === "object"
+        ? JSON.stringify(value)
+        : String(value);
+    }
+
+    if (field.fieldType === "USER") {
+      return formatUserValue(value);
+    }
+
+    if (
+      field.fieldType === "CHOICE" ||
+      field.fieldType === "MULTI_CHOICE"
+    ) {
+      return formatChoiceValue(fieldKey, value);
+    }
+
+    if (
+      value === null ||
+      value === undefined ||
+      value === ""
+    ) {
+      return "—";
+    }
+
+    if (typeof value === "boolean") {
+      return value ? "Yes" : "No";
+    }
+
+    if (typeof value === "object") {
+      return JSON.stringify(value);
+    }
+
+    return String(value);
+  };
+
+  const getColumns = () => {
+    const keys = new Set<string>();
+
+    records.forEach((record) => {
+      Object.keys(record.recordData || {}).forEach((key) =>
+        keys.add(key)
+      );
+    });
+
+    return Array.from(keys);
+  };
+
+  const columns = getColumns();
+
+  return (
+    <main className="min-h-screen bg-slate-50">
+      <div className="mx-auto max-w-7xl px-8 py-8">
+
+        {/* Breadcrumb */}
+        <div className="mb-6 flex items-center gap-2 text-sm">
+          <button
+            onClick={() =>
+              router.push("/configuration/business-objects")
+            }
+            className="text-slate-500 hover:text-slate-900"
+          >
+            Business Objects
+          </button>
+
+          <span className="text-slate-300">&gt;</span>
+
+          <button
+            onClick={() =>
+              router.push(
+                `/configuration/business-objects/${businessObjectId}`
+              )
+            }
+            className="text-slate-500 hover:text-slate-900"
+          >
+            {businessObject?.name || "Business Object"}
+          </button>
+
+          <span className="text-slate-300">&gt;</span>
+
+          <span className="font-medium text-slate-900">
+            Records
+          </span>
+        </div>
+
+        {/* Header */}
+        <div className="mb-8 flex items-start justify-between">
+          <div>
+            <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-slate-500">
+              DATA
+            </p>
+
+            <h1 className="text-3xl font-semibold tracking-tight text-slate-950">
+              {businessObject?.name || "Business Object"} Records
+            </h1>
+
+            <p className="mt-2 text-sm text-slate-500">
+              Manage records created from the configured business object.
+            </p>
+          </div>
+
+          <button
+            className="rounded-lg bg-slate-950 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-slate-800"
+            onClick={() =>
+              router.push(
+                `/configuration/business-objects/${businessObjectId}/records/new`
+              )
+            }
+          >
+            + Create Record
+          </button>
+        </div>
+
+        {/* Error */}
+        {error && (
+          <div className="mb-6 rounded-xl border border-red-200 bg-red-50 px-5 py-4 text-sm text-red-700">
+            {error}
+          </div>
+        )}
+
+        {/* Loading */}
+        {loading ? (
+          <div className="rounded-2xl border border-slate-200 bg-white p-10 text-center">
+            <p className="text-sm text-slate-500">
+              Loading records...
+            </p>
+          </div>
+        ) : records.length === 0 ? (
+
+          /* Empty State */
+          <div className="rounded-2xl border border-dashed border-slate-300 bg-white px-8 py-20 text-center">
+            <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100 text-xl text-slate-500">
+              +
+            </div>
+
+            <h2 className="text-lg font-semibold text-slate-900">
+              No records yet
+            </h2>
+
+            <p className="mx-auto mt-2 max-w-md text-sm text-slate-500">
+              Create the first record for this business object.
+              The record form will automatically use the fields
+              configured for this object.
+            </p>
+
+            <button
+              onClick={() =>
+                router.push(
+                  `/configuration/business-objects/${businessObjectId}/records/new`
+                )
+              }
+              className="mt-6 rounded-lg bg-slate-950 px-5 py-2.5 text-sm font-semibold text-white hover:bg-slate-800"
+            >
+              Create First Record
+            </button>
+          </div>
+
+        ) : (
+
+          /* Records Table */
+          <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+
+            <div className="flex items-center justify-between border-b border-slate-200 px-6 py-4">
+              <div>
+                <h2 className="text-sm font-semibold text-slate-900">
+                  Records
+                </h2>
+
+                <p className="mt-1 text-xs text-slate-500">
+                  {records.length} record
+                  {records.length === 1 ? "" : "s"}
+                </p>
+              </div>
+            </div>
+
+            <div className="overflow-x-auto">
+              <table className="min-w-full text-left text-sm">
+
+                <thead className="border-b border-slate-200 bg-slate-50">
+                  <tr>
+                    <th className="px-6 py-3 font-semibold text-slate-600">
+                      ID
+                    </th>
+
+                    {columns.map((column) => (
+                      <th
+                        key={column}
+                        className="px-6 py-3 font-semibold text-slate-600"
+                      >
+                        {getFieldLabel(column)}
+                      </th>
+                    ))}
+
+                    <th className="px-6 py-3 font-semibold text-slate-600">
+                      Created
+                    </th>
+                  </tr>
+                </thead>
+
+                <tbody className="divide-y divide-slate-100">
+                  {records.map((record) => (
+                    <tr
+                      key={record.id}
+                      className="hover:bg-slate-50"
+                    >
+                      <td className="whitespace-nowrap px-6 py-4 font-mono text-xs text-slate-500">
+                        {record.id.slice(0, 8)}...
+                      </td>
+
+                      {columns.map((column) => {
+                        const value =
+                          record.recordData?.[column];
+
+                        return (
+                          <td
+                            key={column}
+                            className="whitespace-nowrap px-6 py-4 text-slate-700"
+                          >
+                            {formatFieldValue(
+                              column,
+                              value
+                            )}
+                          </td>
+                        );
+                      })}
+
+                      <td className="whitespace-nowrap px-6 py-4 text-slate-500">
+                        {new Date(
+                          record.createdAt
+                        ).toLocaleString()}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+
+              </table>
+            </div>
+          </div>
+        )}
+      </div>
+    </main>
+  );
+}

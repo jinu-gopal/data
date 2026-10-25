@@ -1,6 +1,75 @@
 "use client";
 
+import { useState, useMemo } from "react";
 import Link from "next/link";
+
+function SearchIcon() {
+  return (
+    <svg className="h-4 w-4 shrink-0" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+      <path
+        d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function RecruitmentConfigIcon() {
+  return (
+    <svg
+      className="h-6 w-6"
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden="true"
+    >
+      <path
+        d="M21 13.26A23.93 23.93 0 0 1 12 15c-3.18 0-6.22-.62-9-1.74M16 6V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2m4 6h.01M5 20h14a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2Z"
+        stroke="currentColor"
+        strokeWidth="1.7"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function EcCoreConfigIcon() {
+  return (
+    <svg
+      className="h-6 w-6"
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden="true"
+    >
+      <path
+        d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"
+        stroke="currentColor"
+        strokeWidth="1.7"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <circle
+        cx="9"
+        cy="7"
+        r="4"
+        stroke="currentColor"
+        strokeWidth="1.7"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"
+        stroke="currentColor"
+        strokeWidth="1.7"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
 
 function ArrowIcon() {
   return (
@@ -16,6 +85,31 @@ function ArrowIcon() {
         strokeWidth="1.8"
         strokeLinecap="round"
         strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function OrganizationStudioIcon() {
+  return (
+    <svg
+      className="h-6 w-6"
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden="true"
+    >
+      <path
+        d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-3"
+        stroke="currentColor"
+        strokeWidth="1.7"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M9 9v.01M9 12v.01M9 15v.01M9 18v.01M16 15v.01M16 18v.01"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
       />
     </svg>
   );
@@ -247,6 +341,25 @@ function SparkleIcon() {
   );
 }
 
+function PipelineIcon() {
+  return (
+    <svg
+      className="h-6 w-6"
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden="true"
+    >
+      <path
+        d="M4 16v1a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"
+        stroke="currentColor"
+        strokeWidth="1.7"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 function StatusDot() {
   return (
     <span className="relative flex h-2.5 w-2.5 shrink-0">
@@ -257,8 +370,42 @@ function StatusDot() {
 }
 
 const BUSINESS_OBJECTS_PATH = "/configuration/business-objects";
+const ORGANIZATIONS_PATH = "/configuration/organizations";
+const USERS_ACCESS_PATH = "/users";
+const WORKFLOWS_PATH = "/configuration/workflows";
+const RULES_PATH = "/configuration/rules";
+const NOTIFICATIONS_PATH = "/configuration/notifications";
+const DATA_PIPELINE_PATH = "/configuration/data-pipeline";
+const INTEGRATIONS_PATH = "/integrations";
+const AI_PATH = "/ai";
+const LAYOUTS_PATH = "/configuration/layouts";
+const FINANCE_PATH = "/configuration/finance";
+const RECRUITMENT_PATH = "/configuration/recruitment";
+const EC_CORE_PATH = "/configuration/ec-core";
 
-const configurationAreas = [
+interface ConfigurationArea {
+  title: string;
+  description: string;
+  icon: () => React.JSX.Element;
+  href: string;
+  badge: string;
+  tone: string;
+  category: string;
+  keywords: string;
+}
+
+const configurationAreas: ConfigurationArea[] = [
+  {
+    title: "Organization Structure",
+    description:
+      "Model multi-entity legal structures, corporate divisions, regional branches, and functional departments.",
+    icon: OrganizationStudioIcon,
+    href: ORGANIZATIONS_PATH,
+    badge: "Structure",
+    tone: "blue",
+    category: "Core",
+    keywords: "organization structure org chart entities branches departments hierarchy positions",
+  },
   {
     title: "Business Objects",
     description:
@@ -266,7 +413,9 @@ const configurationAreas = [
     icon: ObjectIcon,
     href: BUSINESS_OBJECTS_PATH,
     badge: "Core",
-    tone: "blue",
+    tone: "violet",
+    category: "Core",
+    keywords: "business objects data schema entities models tables records fields",
   },
   {
     title: "Fields",
@@ -276,60 +425,129 @@ const configurationAreas = [
     href: BUSINESS_OBJECTS_PATH,
     badge: "Data",
     tone: "violet",
+    category: "Core",
+    keywords: "fields custom columns validations picklists datatypes formulas",
   },
   {
     title: "Workflows",
     description:
       "Design approval flows, assignments, conditions and automated actions.",
     icon: WorkflowIcon,
-    href: BUSINESS_OBJECTS_PATH,
+    href: WORKFLOWS_PATH,
     badge: "Automation",
     tone: "emerald",
+    category: "Automation",
+    keywords: "workflows approvals transitions automation routing review sod",
   },
   {
     title: "Rules",
     description:
       "Define business rules that control enterprise behavior without code.",
     icon: RulesIcon,
-    href: BUSINESS_OBJECTS_PATH,
+    href: RULES_PATH,
     badge: "Logic",
     tone: "amber",
+    category: "Automation",
+    keywords: "rules engine logic decisions validation formulas conditions",
   },
   {
-    title: "Permissions",
+    title: "Users & Access",
     description:
-      "Configure access policies, roles and object-level security.",
+      "Configure enterprise roles, RBAC permissions matrix, and user access policies.",
     icon: ShieldIcon,
-    href: BUSINESS_OBJECTS_PATH,
+    href: USERS_ACCESS_PATH,
     badge: "Security",
     tone: "rose",
+    category: "Security",
+    keywords: "users access security roles permissions rbac policies identity",
+  },
+  {
+    title: "Recruiting & Talent",
+    description:
+      "Configure talent pipeline stages, SLA thresholds, Microsoft Teams Graph API integration, and email notification templates.",
+    icon: RecruitmentConfigIcon,
+    href: RECRUITMENT_PATH,
+    badge: "ATS Setup",
+    tone: "blue",
+    category: "Talent",
+    keywords: "recruiting talent pipeline stages sla microsoft teams graph api email notification templates offer letters background verification assessments",
+  },
+  {
+    title: "Employee Central & Core HR",
+    description:
+      "Configure salary grade bands, numbering sequences, 5-tier org structure, custom field builder for people profiles, time-off accrual policies, and Hire-to-Retire gates.",
+    icon: EcCoreConfigIcon,
+    href: EC_CORE_PATH,
+    badge: "EC Core",
+    tone: "emerald",
+    category: "Talent",
+    keywords: "employee central core hr position management org structure people profile custom fields time off absence hire to retire onboarding offboarding salary bands",
   },
   {
     title: "Notifications",
     description:
       "Configure event-driven notifications and enterprise alerts.",
     icon: BellIcon,
-    href: BUSINESS_OBJECTS_PATH,
+    href: NOTIFICATIONS_PATH,
     badge: "Events",
     tone: "cyan",
+    category: "Automation",
+    keywords: "notifications alerts email events dispatch webhooks templates",
+  },
+  {
+    title: "Data Pipeline",
+    description:
+      "Multi-object batch export, bulk ingestion job telemetry, and error inspector.",
+    icon: PipelineIcon,
+    href: DATA_PIPELINE_PATH,
+    badge: "Pipeline",
+    tone: "teal",
+    category: "Core",
+    keywords: "data pipeline etl ingestion export batch sync telemetry",
   },
   {
     title: "Integrations",
     description:
       "Connect MAX ERP with external systems through APIs and events.",
     icon: IntegrationIcon,
-    href: BUSINESS_OBJECTS_PATH,
+    href: INTEGRATIONS_PATH,
     badge: "Connect",
     tone: "indigo",
+    category: "Automation",
+    keywords: "integrations api webhooks rest endpoints connectors external",
   },
   {
     title: "MAX AI",
     description:
       "Use governed natural language to propose configuration changes.",
     icon: SparkleIcon,
-    href: BUSINESS_OBJECTS_PATH,
+    href: AI_PATH,
     badge: "AI",
     tone: "orange",
+    category: "Core",
+    keywords: "max ai natural language copilot llm assistant generator",
+  },
+  {
+    title: "Form & Layouts",
+    description:
+      "Drag-and-drop form views, sections, role-based layouts, and responsive previews.",
+    icon: ObjectIcon,
+    href: LAYOUTS_PATH,
+    badge: "Designer",
+    tone: "violet",
+    category: "Core",
+    keywords: "layouts forms sections drag drop views visual designer",
+  },
+  {
+    title: "Fiscal & Currencies",
+    description:
+      "Multi-currency exchange rates, fiscal quarters, lockout controls, and tax matrix.",
+    icon: OrganizationStudioIcon,
+    href: FINANCE_PATH,
+    badge: "Finance",
+    tone: "emerald",
+    category: "Finance",
+    keywords: "fiscal currencies forex exchange rates periods tax accounting",
   },
 ];
 
@@ -381,9 +599,34 @@ const toneClasses: Record<
     badge: "bg-orange-50 text-orange-600",
     glow: "bg-orange-100/70",
   },
+  teal: {
+    icon: "bg-teal-50 text-teal-600",
+    badge: "bg-teal-50 text-teal-600",
+    glow: "bg-teal-100/70",
+  },
 };
 
 export default function ConfigurationStudioPage() {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState<string>("ALL");
+
+  const filteredAreas = useMemo(() => {
+    return configurationAreas.filter((area) => {
+      const q = searchQuery.toLowerCase().trim();
+      const matchesSearch =
+        !q ||
+        area.title.toLowerCase().includes(q) ||
+        area.description.toLowerCase().includes(q) ||
+        area.badge.toLowerCase().includes(q) ||
+        (area.keywords && area.keywords.toLowerCase().includes(q));
+
+      const matchesCat =
+        selectedCategory === "ALL" || area.category === selectedCategory;
+
+      return matchesSearch && matchesCat;
+    });
+  }, [searchQuery, selectedCategory]);
+
   return (
     <main className="min-h-screen bg-[#f5f7fb] text-slate-950">
       <div className="mx-auto max-w-[1600px] px-5 py-8 sm:px-8 lg:px-10">
@@ -552,69 +795,150 @@ export default function ConfigurationStudioPage() {
           </div>
         </section>
 
-        {/* SECTION TITLE */}
+        {/* SECTION TITLE & SEARCH */}
         <section className="relative z-20 mt-10">
-          <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-blue-600">
-            Configuration areas
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-blue-600">
+                Configuration areas
+              </div>
+
+              <h2 className="mt-2 text-2xl font-bold tracking-tight">
+                Enterprise configuration
+              </h2>
+
+              <p className="mt-1 text-sm text-slate-500">
+                Each area controls a different part of the MAX ERP behavior model.
+              </p>
+            </div>
+
+            <div className="text-xs font-semibold text-slate-500">
+              Showing <span className="font-bold text-slate-900">{filteredAreas.length}</span> of {configurationAreas.length} areas
+            </div>
           </div>
 
-          <h2 className="mt-2 text-2xl font-bold tracking-tight">
-            Enterprise configuration
-          </h2>
+          {/* SEARCH AND CATEGORY FILTER BAR */}
+          <div className="mt-6 flex flex-col gap-3 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm sm:flex-row sm:items-center sm:justify-between">
+            <div className="relative flex-1">
+              <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400">
+                <SearchIcon />
+              </div>
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search settings & configuration (e.g. recruitment, talent pipeline, teams, email templates, rules)..."
+                className="w-full rounded-xl border-0 bg-slate-50/80 py-2.5 pl-10 pr-10 text-xs font-medium text-slate-900 placeholder:text-slate-400 focus:bg-white focus:ring-2 focus:ring-blue-500/20"
+              />
+              {searchQuery && (
+                <button
+                  type="button"
+                  onClick={() => setSearchQuery("")}
+                  className="absolute inset-y-0 right-0 flex items-center pr-3 text-[11px] font-semibold text-slate-400 hover:text-slate-700"
+                >
+                  Clear
+                </button>
+              )}
+            </div>
 
-          <p className="mt-1 text-sm text-slate-500">
-            Each area controls a different part of the MAX ERP behavior model.
-          </p>
+            <div className="flex flex-wrap items-center gap-1">
+              {[
+                { id: "ALL", label: "All" },
+                { id: "Talent", label: "Talent & ATS" },
+                { id: "Core", label: "Core Model" },
+                { id: "Automation", label: "Automation" },
+                { id: "Security", label: "Security" },
+                { id: "Finance", label: "Finance" },
+              ].map((cat) => (
+                <button
+                  key={cat.id}
+                  type="button"
+                  onClick={() => setSelectedCategory(cat.id)}
+                  className={`rounded-lg px-2.5 py-1.5 text-xs font-semibold transition ${
+                    selectedCategory === cat.id
+                      ? "bg-slate-900 text-white shadow-xs"
+                      : "bg-slate-100/70 text-slate-600 hover:bg-slate-200/70"
+                  }`}
+                >
+                  {cat.label}
+                </button>
+              ))}
+            </div>
+          </div>
         </section>
 
         {/* CONFIGURATION CARDS */}
-        <section className="relative z-20 mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-4">
-          {configurationAreas.map((area) => {
-            const Icon = area.icon;
-            const tone = toneClasses[area.tone];
-
-            return (
-              <Link
-                key={area.title}
-                href={area.href}
-                prefetch
-                aria-label={`Configure ${area.title}`}
-                className="group relative z-20 block cursor-pointer overflow-hidden rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition duration-200 hover:-translate-y-1 hover:border-slate-300 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+        <section className="relative z-20 mt-6">
+          {filteredAreas.length === 0 ? (
+            <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-slate-300 bg-white p-12 text-center shadow-xs">
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-slate-100 text-slate-500">
+                <SearchIcon />
+              </div>
+              <h3 className="mt-4 text-sm font-bold text-slate-900">No configuration settings found</h3>
+              <p className="mt-1 max-w-sm text-xs leading-5 text-slate-500">
+                No configuration module matched &ldquo;{searchQuery}&rdquo;. Try searching for &ldquo;recruiting&rdquo;, &ldquo;pipeline&rdquo;, &ldquo;teams&rdquo;, &ldquo;workflows&rdquo;, or &ldquo;rules&rdquo;.
+              </p>
+              <button
+                type="button"
+                onClick={() => {
+                  setSearchQuery("");
+                  setSelectedCategory("ALL");
+                }}
+                className="mt-4 rounded-xl bg-blue-600 px-4 py-2 text-xs font-semibold text-white shadow-sm hover:bg-blue-700 transition"
               >
-                {/* DECORATIVE GLOW */}
-                <div
-                  className={`pointer-events-none absolute -right-12 -top-12 h-32 w-32 rounded-full blur-sm transition duration-300 group-hover:scale-125 ${tone.glow}`}
-                />
+                Reset Search & Filters
+              </button>
+            </div>
+          ) : (
+            <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
+              {filteredAreas.map((area) => {
+                const Icon = area.icon;
+                const tone = toneClasses[area.tone] || toneClasses.blue;
 
-                <div className="relative z-10">
-                  <div className="flex items-center justify-between">
+                return (
+                  <Link
+                    key={area.title}
+                    href={area.href}
+                    prefetch
+                    aria-label={`Configure ${area.title}`}
+                    className="group relative z-20 block cursor-pointer overflow-hidden rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition duration-200 hover:-translate-y-1 hover:border-slate-300 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                  >
+                    {/* DECORATIVE GLOW */}
                     <div
-                      className={`flex h-12 w-12 items-center justify-center rounded-xl ${tone.icon}`}
-                    >
-                      <Icon />
+                      className={`pointer-events-none absolute -right-12 -top-12 h-32 w-32 rounded-full blur-sm transition duration-300 group-hover:scale-125 ${tone.glow}`}
+                    />
+
+                    <div className="relative z-10">
+                      <div className="flex items-center justify-between">
+                        <div
+                          className={`flex h-12 w-12 items-center justify-center rounded-xl ${tone.icon}`}
+                        >
+                          <Icon />
+                        </div>
+
+                        <span
+                          className={`rounded-full px-2.5 py-1 text-[9px] font-bold uppercase tracking-wider ${tone.badge}`}
+                        >
+                          {area.badge}
+                        </span>
+                      </div>
+
+                      <h3 className="mt-6 text-base font-bold text-slate-900">{area.title}</h3>
+
+                      <p className="mt-2 min-h-[58px] text-xs leading-5 text-slate-500">
+                        {area.description}
+                      </p>
+
+                      <div className="mt-5 flex items-center gap-2 text-xs font-bold text-slate-700 transition-all group-hover:gap-3 group-hover:text-blue-600">
+                        Configure
+                        <ArrowIcon />
+                      </div>
                     </div>
-
-                    <span
-                      className={`rounded-full px-2.5 py-1 text-[9px] font-bold uppercase tracking-wider ${tone.badge}`}
-                    >
-                      {area.badge}
-                    </span>
-                  </div>
-
-                  <h3 className="mt-6 text-base font-bold">{area.title}</h3>
-
-                  <p className="mt-2 min-h-[58px] text-xs leading-5 text-slate-500">
-                    {area.description}
-                  </p>
-
-                  <div className="mt-5 flex items-center gap-2 text-xs font-bold text-slate-700 transition-all group-hover:gap-3 group-hover:text-blue-600">
-                    Configure
-                    <ArrowIcon />
-                  </div>
-                </div>
-              </Link>
-            );
-          })}
+                  </Link>
+                );
+              })}
+            </div>
+          )}
         </section>
 
         {/* LOWER CONTENT */}

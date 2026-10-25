@@ -1,6 +1,6 @@
 "use client";
 
-import { type ReactNode } from "react";
+import { type ReactNode, useState } from "react";
 import MaxSidebar from "./MaxSidebar";
 import MaxTopbar from "./MaxTopbar";
 
@@ -17,25 +17,32 @@ export default function MaxShell({
   email,
   onSignOut,
 }: MaxShellProps) {
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
   return (
-    <div className="min-h-screen bg-[var(--max-background)] text-[var(--max-text)]">
+    <div className="min-h-screen bg-[#f8fafc] text-slate-900 flex flex-col font-sans antialiased">
+      {/* 1. FULL-WIDTH DELOITTE/AWS EXECUTIVE TOPBAR (100% SCREEN WIDTH) */}
+      <MaxTopbar
+        name={name}
+        email={email}
+        onSignOut={onSignOut}
+        onToggleSidebar={() => setSidebarOpen((prev) => !prev)}
+      />
 
-      <MaxSidebar />
+      {/* 2. MAIN WORKSPACE CONTAINER */}
+      <div className="flex-1 w-full">
+        {/* Optional Collapsible Sidebar / Drawer */}
+        {sidebarOpen && (
+          <div
+            className="fixed inset-0 z-40 bg-black/40 backdrop-blur-xs transition-opacity lg:hidden"
+            onClick={() => setSidebarOpen(false)}
+          />
+        )}
 
-      <div className="min-h-screen lg:pl-[258px]">
-
-        <MaxTopbar
-          name={name}
-          email={email}
-          onSignOut={onSignOut}
-        />
-
-        <main className="min-h-[calc(100vh-76px)] bg-[var(--max-background)]">
-
-          <div className="mx-auto w-full max-w-[1800px] px-5 py-6 sm:px-7 lg:px-8 xl:px-10">
+        <main className="min-h-[calc(100vh-64px)] w-full bg-[#f8fafc]">
+          <div className="mx-auto w-full max-w-[1720px] px-4 py-6 sm:px-6 lg:px-8 xl:px-10">
             {children}
           </div>
-
         </main>
       </div>
     </div>

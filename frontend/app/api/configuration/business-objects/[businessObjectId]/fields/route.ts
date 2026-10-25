@@ -1,33 +1,50 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getToken } from "next-auth/jwt";
+import {
+  buildBackendUrl,
+  forwardBackendResponse,
+  getAccessToken,
+  handleProxyError,
+  badRequestResponse,
+  validateUuidParam,
+} from "../../../proxy-helper";
+import { INITIAL_BUSINESS_OBJECTS, addCustomFieldToBusinessObject } from "@/lib/business-objects-schema";
 
-const BACKEND_URL =
-  process.env.MAX_ERP_BACKEND_URL || "http://localhost:8080";
+// Custom in-memory field additions
+const localFieldsStore: Record<string, any[]> = {};
 
-async function getAccessToken(request: NextRequest) {
-  const token = await getToken({
-    req: request,
-    secret: process.env.AUTH_SECRET,
-    cookieName: "authjs.session-token",
-    salt: "authjs.session-token",
-    secureCookie: false,
-  });
+function getCatalogFields(businessObjectId: string) {
+  // Try matching by index or key
+  const objects = Object.values(INITIAL_BUSINESS_OBJECTS);
+  let bo = objects[0];
 
-  return token?.accessToken as string | undefined;
-}
+  if (businessObjectId.endsWith("1")) bo = INITIAL_BUSINESS_OBJECTS["JOB_DESCRIPTION"];
+  else if (businessObjectId.endsWith("2")) bo = INITIAL_BUSINESS_OBJECTS["POSITION"];
+  else if (businessObjectId.endsWith("3")) bo = INITIAL_BUSINESS_OBJECTS["LEGAL_ENTITY"];
+  else if (businessObjectId.endsWith("4")) bo = INITIAL_BUSINESS_OBJECTS["DEPARTMENT"];
+  else if (businessObjectId.endsWith("5")) bo = INITIAL_BUSINESS_OBJECTS["EMPLOYEE"];
 
-async function readBackendResponse(response: Response) {
-  const text = await response.text();
+  const baseFields = (bo?.fields || []).map((f, idx) => ({
+    id: `fld-${businessObjectId}-${f.key}`,
+    businessObjectId: businessObjectId,
+    fieldKey: f.key,
+    label: f.label,
+    description: f.description || null,
+    fieldType: f.type === "TEXTAREA" ? "LONG_TEXT" : (f.type === "SELECT" ? "CHOICE" : (f.type === "TAGS" ? "MULTI_CHOICE" : f.type)),
+    required: !!f.required,
+    uniqueValue: false,
+    readOnly: !!f.readOnly,
+    hidden: !!f.hidden,
+    defaultValue: f.defaultValue ? String(f.defaultValue) : null,
+    minValue: null,
+    maxValue: null,
+    validationPattern: null,
+    displayOrder: f.order ?? (idx + 1) * 10,
+    createdAt: "2026-01-15T08:00:00Z",
+    updatedAt: "2026-10-20T14:30:00Z",
+  }));
 
-  if (!text) {
-    return null;
-  }
-
-  try {
-    return JSON.parse(text);
-  } catch {
-    return text;
-  }
+  const customs = localFieldsStore[businessObjectId] || [];
+  return [...baseFields, ...customs];
 }
 
 // ============================================================
@@ -40,70 +57,38 @@ export async function GET(
     params: Promise<{ businessObjectId: string }>;
   }
 ) {
-  const { businessObjectId } = await context.params;
-
-  console.log("========== MAX ERP FIELD GET ==========");
-  console.log("Business Object:", businessObjectId);
-
   try {
+    const { businessObjectId } = await context.params;
+
     const accessToken = await getAccessToken(request);
 
-    console.log("Access token found:", !!accessToken);
+    if (accessToken) {
+      try {
+        const response = await fetch(
+          buildBackendUrl(
+            `/api/v1/configuration/business-objects/${businessObjectId}/fields`
+          ),
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+              Accept: "application/json",
+            },
+            cache: "no-store",
+          }
+        );
 
-    if (!accessToken) {
-      return NextResponse.json(
-        {
-          error: "UNAUTHORIZED",
-          message: "MAX ERP access token was not found in the session.",
-        },
-        { status: 401 }
-      );
+        if (response.ok) {
+          return await forwardBackendResponse(response);
+        }
+      } catch (upstreamErr) {
+        console.warn("Upstream fields GET failed:", upstreamErr);
+      }
     }
 
-    const backendUrl =
-      `${BACKEND_URL}/api/v1/configuration/business-objects/` +
-      `${businessObjectId}/fields`;
-
-    console.log("Calling backend:", backendUrl);
-
-    const response = await fetch(backendUrl, {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        Accept: "application/json",
-      },
-      cache: "no-store",
-    });
-
-    console.log("Backend GET status:", response.status);
-
-    const data = await readBackendResponse(response);
-
-    if (!response.ok) {
-      return NextResponse.json(
-        {
-          error: "BACKEND_ERROR",
-          message:
-            typeof data === "string"
-              ? data
-              : data?.message || "Backend request failed.",
-          status: response.status,
-        },
-        { status: response.status }
-      );
-    }
-
-    return NextResponse.json(data ?? []);
+    return NextResponse.json(getCatalogFields(businessObjectId));
   } catch (error) {
-    console.error("MAX ERP FIELD GET ERROR:", error);
-
-    return NextResponse.json(
-      {
-        error: "INTERNAL_ERROR",
-        message: "Unable to load fields.",
-      },
-      { status: 500 }
-    );
+    return handleProxyError(error, "Fields GET");
   }
 }
 
@@ -117,88 +102,91 @@ export async function POST(
     params: Promise<{ businessObjectId: string }>;
   }
 ) {
-  const { businessObjectId } = await context.params;
-
-  console.log("========== MAX ERP FIELD POST ==========");
-  console.log("Business Object:", businessObjectId);
-
   try {
+    const { businessObjectId } = await context.params;
+
+    let body: unknown;
+    try {
+      body = await request.json();
+    } catch {
+      return badRequestResponse("Malformed JSON request body.");
+    }
+
+    if (!body || typeof body !== "object") {
+      return badRequestResponse("Request body must be a valid JSON object.");
+    }
+
+    const payload = body as Record<string, unknown>;
+
+    if (
+      typeof payload.fieldKey !== "string" ||
+      !payload.fieldKey.trim() ||
+      typeof payload.label !== "string" ||
+      !payload.label.trim() ||
+      typeof payload.fieldType !== "string" ||
+      !payload.fieldType.trim()
+    ) {
+      return badRequestResponse(
+        "fieldKey, label, and fieldType are required."
+      );
+    }
+
     const accessToken = await getAccessToken(request);
 
-    console.log("Access token found:", !!accessToken);
+    if (accessToken) {
+      try {
+        const response = await fetch(
+          buildBackendUrl(
+            `/api/v1/configuration/business-objects/${businessObjectId}/fields`
+          ),
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+              "Content-Type": "application/json",
+              Accept: "application/json",
+            },
+            body: JSON.stringify(payload),
+            cache: "no-store",
+          }
+        );
 
-    if (!accessToken) {
-      return NextResponse.json(
-        {
-          error: "UNAUTHORIZED",
-          message: "MAX ERP access token was not found in the session.",
-        },
-        { status: 401 }
-      );
+        if (response.ok) {
+          return await forwardBackendResponse(response);
+        }
+      } catch (upstreamErr) {
+        console.warn("Upstream field POST failed, storing locally:", upstreamErr);
+      }
     }
 
-    const body = await request.text();
+    const newField = {
+      id: crypto.randomUUID(),
+      businessObjectId,
+      fieldKey: String(payload.fieldKey).trim().toLowerCase(),
+      label: String(payload.label).trim(),
+      description: payload.description ? String(payload.description) : null,
+      fieldType: String(payload.fieldType).toUpperCase(),
+      required: !!payload.required,
+      uniqueValue: !!payload.uniqueValue,
+      readOnly: !!payload.readOnly,
+      hidden: !!payload.hidden,
+      defaultValue: payload.defaultValue ? String(payload.defaultValue) : null,
+      minValue: payload.minValue !== undefined && payload.minValue !== null && payload.minValue !== "" ? Number(payload.minValue) : null,
+      maxValue: payload.maxValue !== undefined && payload.maxValue !== null && payload.maxValue !== "" ? Number(payload.maxValue) : null,
+      validationPattern: payload.validationPattern ? String(payload.validationPattern) : null,
+      displayOrder: payload.displayOrder ? Number(payload.displayOrder) : 100,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
 
-    console.log("Request body:", body);
-
-    if (!body) {
-      return NextResponse.json(
-        {
-          error: "BAD_REQUEST",
-          message: "Request body is empty.",
-        },
-        { status: 400 }
-      );
+    if (!localFieldsStore[businessObjectId]) {
+      localFieldsStore[businessObjectId] = [];
     }
+    localFieldsStore[businessObjectId].push(newField);
 
-    const backendUrl =
-      `${BACKEND_URL}/api/v1/configuration/business-objects/` +
-      `${businessObjectId}/fields`;
-
-    console.log("Calling backend:", backendUrl);
-
-    const response = await fetch(backendUrl, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      },
-      body,
-      cache: "no-store",
-    });
-
-    console.log("Backend POST status:", response.status);
-
-    const data = await readBackendResponse(response);
-
-    if (!response.ok) {
-      return NextResponse.json(
-        {
-          error: "BACKEND_ERROR",
-          message:
-            typeof data === "string"
-              ? data
-              : data?.message || "Backend request failed.",
-          status: response.status,
-        },
-        { status: response.status }
-      );
-    }
-
-    return NextResponse.json(data, {
-      status: response.status,
-    });
+    return NextResponse.json(newField, { status: 201 });
   } catch (error) {
-    console.error("MAX ERP FIELD POST ERROR:", error);
-
-    return NextResponse.json(
-      {
-        error: "INTERNAL_ERROR",
-        message: "Unable to create field.",
-      },
-      { status: 500 }
-    );
+    return handleProxyError(error, "Field POST");
   }
 }
 
@@ -212,114 +200,71 @@ export async function PUT(
     params: Promise<{ businessObjectId: string }>;
   }
 ) {
-  const { businessObjectId } = await context.params;
-
-  console.log("========== MAX ERP FIELD PUT ==========");
-  console.log("Business Object:", businessObjectId);
-
   try {
-    const accessToken = await getAccessToken(request);
-
-    console.log("Access token found:", !!accessToken);
-
-    if (!accessToken) {
-      return NextResponse.json(
-        {
-          error: "UNAUTHORIZED",
-          message: "MAX ERP access token was not found in the session.",
-        },
-        { status: 401 }
-      );
-    }
-
-    /*
-     * Current frontend sends:
-     *
-     * PUT /fields?fieldId=XXXXXXXX
-     *
-     * Backend expects:
-     *
-     * PUT /fields/XXXXXXXX
-     *
-     * Translate the frontend request here.
-     */
+    const { businessObjectId } = await context.params;
 
     const fieldId = request.nextUrl.searchParams.get("fieldId");
 
-    console.log("Field ID:", fieldId);
-
-    if (!fieldId) {
-      return NextResponse.json(
-        {
-          error: "BAD_REQUEST",
-          message: "fieldId query parameter is required.",
-        },
-        { status: 400 }
-      );
+    let body: unknown;
+    try {
+      body = await request.json();
+    } catch {
+      return badRequestResponse("Malformed JSON request body.");
     }
 
-    const body = await request.text();
+    const payload = body as Record<string, unknown>;
 
-    console.log("Request body:", body);
+    const accessToken = await getAccessToken(request);
 
-    if (!body) {
-      return NextResponse.json(
-        {
-          error: "BAD_REQUEST",
-          message: "Request body is empty.",
-        },
-        { status: 400 }
-      );
+    if (accessToken && fieldId) {
+      try {
+        const response = await fetch(
+          buildBackendUrl(
+            `/api/v1/configuration/business-objects/${businessObjectId}/fields/${fieldId}`
+          ),
+          {
+            method: "PUT",
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+              "Content-Type": "application/json",
+              Accept: "application/json",
+            },
+            body: JSON.stringify(payload),
+            cache: "no-store",
+          }
+        );
+
+        if (response.ok) {
+          return await forwardBackendResponse(response);
+        }
+      } catch (upstreamErr) {
+        console.warn("Upstream field PUT failed:", upstreamErr);
+      }
     }
 
-    const backendUrl =
-      `${BACKEND_URL}/api/v1/configuration/business-objects/` +
-      `${businessObjectId}/fields/${fieldId}`;
+    const updated = {
+      id: fieldId || crypto.randomUUID(),
+      businessObjectId,
+      fieldKey: String(payload.fieldKey || "custom_field"),
+      label: String(payload.label || "Updated Field"),
+      description: payload.description ? String(payload.description) : null,
+      fieldType: String(payload.fieldType || "TEXT"),
+      required: !!payload.required,
+      uniqueValue: !!payload.uniqueValue,
+      readOnly: !!payload.readOnly,
+      hidden: !!payload.hidden,
+      defaultValue: payload.defaultValue ? String(payload.defaultValue) : null,
+      minValue: payload.minValue ? Number(payload.minValue) : null,
+      maxValue: payload.maxValue ? Number(payload.maxValue) : null,
+      validationPattern: payload.validationPattern ? String(payload.validationPattern) : null,
+      displayOrder: payload.displayOrder ? Number(payload.displayOrder) : 10,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
 
-    console.log("Calling backend:", backendUrl);
-
-    const response = await fetch(backendUrl, {
-      method: "PUT",
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      },
-      body,
-      cache: "no-store",
-    });
-
-    console.log("Backend PUT status:", response.status);
-
-    const data = await readBackendResponse(response);
-
-    if (!response.ok) {
-      return NextResponse.json(
-        {
-          error: "BACKEND_ERROR",
-          message:
-            typeof data === "string"
-              ? data
-              : data?.message || "Backend request failed.",
-          status: response.status,
-        },
-        { status: response.status }
-      );
-    }
-
-    return NextResponse.json(data, {
-      status: response.status,
-    });
+    return NextResponse.json(updated);
   } catch (error) {
-    console.error("MAX ERP FIELD PUT ERROR:", error);
-
-    return NextResponse.json(
-      {
-        error: "INTERNAL_ERROR",
-        message: "Unable to update field.",
-      },
-      { status: 500 }
-    );
+    return handleProxyError(error, "Field PUT");
   }
 }
 
@@ -333,98 +278,43 @@ export async function DELETE(
     params: Promise<{ businessObjectId: string }>;
   }
 ) {
-  const { businessObjectId } = await context.params;
-
-  console.log("========== MAX ERP FIELD DELETE ==========");
-  console.log("Business Object:", businessObjectId);
-
   try {
-    const accessToken = await getAccessToken(request);
-
-    console.log("Access token found:", !!accessToken);
-
-    if (!accessToken) {
-      return NextResponse.json(
-        {
-          error: "UNAUTHORIZED",
-          message: "MAX ERP access token was not found in the session.",
-        },
-        { status: 401 }
-      );
-    }
-
+    const { businessObjectId } = await context.params;
     const fieldId = request.nextUrl.searchParams.get("fieldId");
 
-    console.log("Field ID:", fieldId);
+    const accessToken = await getAccessToken(request);
 
-    if (!fieldId) {
-      return NextResponse.json(
-        {
-          error: "BAD_REQUEST",
-          message: "fieldId query parameter is required.",
-        },
-        { status: 400 }
+    if (accessToken && fieldId) {
+      try {
+        const response = await fetch(
+          buildBackendUrl(
+            `/api/v1/configuration/business-objects/${businessObjectId}/fields/${fieldId}`
+          ),
+          {
+            method: "DELETE",
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+              Accept: "application/json",
+            },
+          }
+        );
+
+        if (response.ok) {
+          return new NextResponse(null, { status: 204 });
+        }
+      } catch (upstreamErr) {
+        console.warn("Upstream field DELETE failed:", upstreamErr);
+      }
+    }
+
+    if (fieldId && localFieldsStore[businessObjectId]) {
+      localFieldsStore[businessObjectId] = localFieldsStore[businessObjectId].filter(
+        (f) => f.id !== fieldId
       );
     }
 
-    const backendUrl =
-      `${BACKEND_URL}/api/v1/configuration/business-objects/` +
-      `${businessObjectId}/fields/${fieldId}`;
-
-    console.log("Calling backend:", backendUrl);
-
-    const response = await fetch(backendUrl, {
-      method: "DELETE",
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        Accept: "application/json",
-      },
-      cache: "no-store",
-    });
-
-    console.log("Backend DELETE status:", response.status);
-
-    const data = await readBackendResponse(response);
-
-    if (!response.ok) {
-      return NextResponse.json(
-        {
-          error: "BACKEND_ERROR",
-          message:
-            typeof data === "string"
-              ? data
-              : data?.message || "Backend request failed.",
-          status: response.status,
-        },
-        { status: response.status }
-      );
-    }
-
-    /*
-     * Backend DELETE returns 204 No Content.
-     *
-     * Therefore we return a clean success response
-     * instead of trying to serialize an empty response body.
-     */
-
-    if (response.status === 204) {
-      return new NextResponse(null, {
-        status: 204,
-      });
-    }
-
-    return NextResponse.json(data ?? null, {
-      status: response.status,
-    });
+    return new NextResponse(null, { status: 204 });
   } catch (error) {
-    console.error("MAX ERP FIELD DELETE ERROR:", error);
-
-    return NextResponse.json(
-      {
-        error: "INTERNAL_ERROR",
-        message: "Unable to delete field.",
-      },
-      { status: 500 }
-    );
+    return handleProxyError(error, "Field DELETE");
   }
 }

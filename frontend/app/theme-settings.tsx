@@ -155,7 +155,7 @@ function ThemePreview({
     },
   };
 
-  const config = configs[theme];
+  const config = (configs as Record<string, any>)[theme] || configs.platinum;
 
   return (
     <div

@@ -12,7 +12,9 @@ export type MaxTheme =
   | "platinum"
   | "obsidian"
   | "arctic"
-  | "midnight";
+  | "midnight"
+  | "emerald"
+  | "amethyst";
 
 type ThemeContextValue = {
   theme: MaxTheme;
@@ -35,7 +37,9 @@ function isValidTheme(
     value === "platinum" ||
     value === "obsidian" ||
     value === "arctic" ||
-    value === "midnight"
+    value === "midnight" ||
+    value === "emerald" ||
+    value === "amethyst"
   );
 }
 
@@ -44,17 +48,15 @@ export function ThemeProvider({
 }: {
   children: ReactNode;
 }) {
-  const [theme, setThemeState] =
-    useState<MaxTheme>(DEFAULT_THEME);
-
-  useEffect(() => {
-    const saved =
-      window.localStorage.getItem(STORAGE_KEY);
-
-    if (isValidTheme(saved)) {
-      setThemeState(saved);
+  const [theme, setThemeState] = useState<MaxTheme>(() => {
+    if (typeof window !== "undefined") {
+      const saved = window.localStorage.getItem(STORAGE_KEY);
+      if (isValidTheme(saved)) {
+        return saved;
+      }
     }
-  }, []);
+    return DEFAULT_THEME;
+  });
 
   useEffect(() => {
     const html =
@@ -67,6 +69,27 @@ export function ThemeProvider({
       "data-max-theme",
       theme
     );
+    html.setAttribute(
+      "data-theme",
+      theme
+    );
+
+    /*
+     * Synchronize Tailwind "dark" class & color-scheme
+     */
+    const isDark =
+      theme === "obsidian" ||
+      theme === "midnight" ||
+      theme === "emerald" ||
+      theme === "amethyst";
+
+    if (isDark) {
+      html.classList.add("dark");
+      html.style.colorScheme = "dark";
+    } else {
+      html.classList.remove("dark");
+      html.style.colorScheme = "light";
+    }
 
     /*
      * Additional class for reliable CSS targeting.
@@ -75,7 +98,9 @@ export function ThemeProvider({
       "max-theme-platinum",
       "max-theme-obsidian",
       "max-theme-arctic",
-      "max-theme-midnight"
+      "max-theme-midnight",
+      "max-theme-emerald",
+      "max-theme-amethyst"
     );
 
     html.classList.add(
